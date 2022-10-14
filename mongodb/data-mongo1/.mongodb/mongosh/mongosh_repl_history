@@ -1,0 +1,14 @@
+db.startup_log.find().pretty()
+db.getCollectionInfos()
+use local
+show dbs
+rs.conf()
+rs.config()
+fdsa
+rs.config
+rs.status()
+rs.initiate()
+rs
+show dbs
+show
+show dbs

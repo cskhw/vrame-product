@@ -7,6 +7,7 @@ import indexRouter from "./routes";
 import userRouter from "./routes/user";
 
 const app = express();
+
 const PORT = process.env.PORT || 3000;
 
 app.use(cors()); // CORS 이슈 해결
@@ -14,14 +15,11 @@ app.use(express.urlencoded({ extended: true })); // query 받기
 app.use(express.json()); // body 받기
 
 // mongo DB 연결
-
 const mongoConfig = {};
+const MONGO_URL: string = process.env.MONGO_URL || "";
 
 mongoose
-  .connect(
-    "mongodb+srv://admin:<password>@cluster0.jlkeu.mongodb.net/?retryWrites=true&w=majority",
-    mongoConfig
-  )
+  .connect(MONGO_URL, mongoConfig)
   .then(() => console.log("MongoDB conected"))
   .catch((err) => {
     console.log(err);

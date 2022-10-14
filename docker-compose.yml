@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   nginx:
     container_name: "nginx"
@@ -20,3 +20,22 @@ services:
       dockerfile: Dockerfile
     ports:
       - "3000:3000"
+
+    ### Mongodb Servers
+  mongo-vrame:
+    image: mongo
+    container_name: mongo-vrame
+    restart: always
+    logging:
+      options:
+        max-size: 1g
+    env_file:
+      - .env
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_INITDB_ROOT_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_INITDB_ROOT_PASSWORD}
+      - TZ=Asia/Seoul
+    ports:
+      - 27017:27017
+    expose:
+      - 27017
