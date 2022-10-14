@@ -7,7 +7,7 @@ import indexRouter from "./routes";
 import userRouter from "./routes/user";
 
 const app = express();
-const PORT = process.env.PORT || 1234;
+const PORT = process.env.PORT || 3000;
 
 app.use(cors()); // CORS 이슈 해결
 app.use(express.urlencoded({ extended: true })); // query 받기
