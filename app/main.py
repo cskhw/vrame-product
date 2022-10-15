@@ -1,17 +1,28 @@
-from typing import Optional
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.common.config import settings
+from app.config import settings
 from app.routers import user, auth, post
-from app.common.consts import base_url
+from app.consts import BASE_URL
 
 app = FastAPI()
 
-@app.get(f"{base_url}/")
-def read_root():
-    return {"Hello": "World"}
+origins = [
+    settings.CLIENT_ORIGIN,
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(auth.router, tags=['Auth'], prefix=f'{BASE_URL}/auth')
+app.include_router(user.router, tags=['Users'], prefix=f'{BASE_URL}/users')
+app.include_router(post.router, tags=['Posts'], prefix=f'{BASE_URL}/posts')
 
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+@app.get(f'{BASE_URL}/')
+def root():
+    return {'message': 'hello vrame'}

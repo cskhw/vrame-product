@@ -58,13 +58,11 @@ class PostResponse(PostBaseSchema):
 
 
 class UpdatePostSchema(BaseModel):
-    title: str
-    content: str
-    category: str
-    image: str
+    title: str | None = None
+    content: str | None = None
+    category: str | None = None
+    image: str | None = None
     user_id: uuid.UUID | None = None
-    created_at: datetime | None = None
-    updated_at: datetime | None = None
 
     class Config:
         orm_mode = True
@@ -74,5 +72,3 @@ class ListPostResponse(BaseModel):
     status: str
     results: int
     posts: List[PostResponse]
-
-

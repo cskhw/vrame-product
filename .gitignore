@@ -2,6 +2,7 @@
 node_modules
 /dist
 /venv
+__pycache__
 
 # misc
 .DS_Store
@@ -20,5 +21,4 @@ package-lock.json
 .env.production.local
 
 .ssh
-
 gitlab

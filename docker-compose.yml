@@ -59,6 +59,8 @@ services:
           - fastapi-app
     depends_on:
       - postgres
+    env_file:
+      - ./.env
 
 networks:
   my-network:
