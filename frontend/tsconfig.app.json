@@ -1,0 +1,31 @@
+{
+  "extends": "@vue/tsconfig/tsconfig.web.json",
+  "include": [
+    "env.d.ts",
+    "shim-vue.d.ts",
+    "types/main.d.ts",
+    "src/**/*",
+    "src/**/*.vue",
+    "package.json"
+  ],
+  "exclude": ["src/**/__tests__/*"],
+  // include library type files(ts, d.ts)
+  "paths": {
+    "*": ["./types/*"]
+  },
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    // allow json
+    "composite": true,
+    "resolveJsonModule": true,
+    "esModuleInterop": true,
+    // library build options
+    "emitDeclarationOnly": true,
+    "declaration": true,
+    "declarationMap": true,
+    "declarationDir": "./types"
+  }
+}

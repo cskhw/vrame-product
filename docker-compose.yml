@@ -9,16 +9,32 @@ services:
   #   container_name: gitlab
   #   environment:
   #     GITLAB_OMNIBUS_CONFIG: |
-  #       external_url 'http://gitlab.vrame.com:3000'
+  #       external_url 'http://gitlab.vrame.com:5000'
   #       gitlab_rails['gitlab_shell_ssh_port'] = 22
   #   ports:
   #     - "443:443"
-  #     - "3000:80"
+  #     - "5000:80"
   #   volumes:
   #     - "./gitlab/config:/etc/gitlab"
   #     - "./gitlab/logs:/var/log/gitlab"
   #     - "./gitlab/data:/var/opt/gitlab"
   #     - "./gitlab/backup:/var/opt/gitlab/backups" # 백업 폴더 추가
+
+  # frontend:
+  #   container_name: frontend
+  #   image: node:lts
+  #   working_dir: /var/www/html/app/
+  #   entrypoint: /bin/bash
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   expose:
+  #     - 3000
+  #   volumes:
+  #     - ./frontend/:/var/www/html/app
+  #   tty: true
+  #   env_file:
+  #     - ./frontend/.env
 
   postgres:
     container_name: postgres
