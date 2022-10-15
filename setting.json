@@ -1,0 +1,4 @@
+{
+  "python.pythonPath": ""
+}
+docker run -d --name gitlab-dind --privileged --restart always -p 2375:2375 --network gitlab-runner-net -v /var/lib/docker docker:dind
