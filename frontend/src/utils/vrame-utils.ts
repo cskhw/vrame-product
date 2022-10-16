@@ -36,6 +36,9 @@ dataURItoBlob       dataURI를 Blob로 변환
 dataURLtoFile       dataURI를 File로 변환
 getThumbImgFile     이미지 썸네일 생성
 getCodeFromLang     언어 약자에 맞는 코드를 반환
+
+// css
+rgbToRgba           rgb를 rgba 스트링으로 변환
 */
 
 // 한글 조사 변환용 배열(받침 있는 경우)
@@ -361,12 +364,6 @@ export function sortObjectArray(
       });
     }
   }
-
-  // targetArray.forEach ((item) => {
-  //     console.log(item[key])
-  // })
-
-  // console.log(targetArray);
 }
 
 // 설명:            구성요소 자동완성 태그 생성
@@ -902,4 +899,12 @@ export async function urlToFile(
   const res = await fetch(url);
   const buf = await res.arrayBuffer();
   return new File([buf], filename, { type: mimeType });
+}
+
+/**css */
+export function rgbToRgba(hex: string, opacity: string): string {
+  return `rgba(${parseInt(hex.slice(1, 3), 16)}, ${parseInt(
+    hex.slice(3, 5),
+    16
+  )}, ${parseInt(hex.slice(5, 7), 16)}, ${opacity})`;
 }

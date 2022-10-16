@@ -80,6 +80,7 @@
           :hoverColor="'white'"
           >로그인</r-btn
         >
+        <div class="">아이디 찾기 | 비밀번호 찾기 | 회원가입</div>
         <div class="login-footer">footer</div>
       </div>
     </r-main>
