@@ -1,5 +1,6 @@
 import uuid
-from .. import schemas, models
+from .. import models
+from app.schemas import posts
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status, APIRouter, Response
 from ..database import get_db
@@ -7,8 +8,7 @@ from app.oauth2 import require_user
 
 router = APIRouter()
 
-
-@router.get('/', response_model=schemas.ListPostResponse)
+@router.get('/', response_model=posts.ListPostResponse)
 def get_posts(db: Session = Depends(get_db), limit: int = 10, page: int = 1, search: str = '', user_id: str = Depends(require_user)):
     skip = (page - 1) * limit
 
@@ -17,8 +17,8 @@ def get_posts(db: Session = Depends(get_db), limit: int = 10, page: int = 1, sea
     return {'status': 'success', 'results': len(posts), 'posts': posts}
 
 
-@router.post('/', status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
-def create_post(post: schemas.CreatePostSchema, db: Session = Depends(get_db), owner_id: str = Depends(require_user)):
+@router.post('/', status_code=status.HTTP_201_CREATED, response_model=posts.PostResponse)
+def create_post(post: posts.CreatePostSchema, db: Session = Depends(get_db), owner_id: str = Depends(require_user)):
     post.user_id = uuid.UUID(owner_id)
     new_post = models.Post(**post.dict())
     db.add(new_post)
@@ -27,8 +27,8 @@ def create_post(post: schemas.CreatePostSchema, db: Session = Depends(get_db), o
     return new_post
 
 
-@router.put('/{id}', response_model=schemas.PostResponse)
-def update_post(id: str, post: schemas.UpdatePostSchema, db: Session = Depends(get_db), user_id: str = Depends(require_user)):
+@router.put('/{id}', response_model=posts.PostResponse)
+def update_post(id: str, post: posts.UpdatePostSchema, db: Session = Depends(get_db), user_id: str = Depends(require_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     updated_post = post_query.first()
 
@@ -43,7 +43,7 @@ def update_post(id: str, post: schemas.UpdatePostSchema, db: Session = Depends(g
     return updated_post
 
 
-@router.get('/{id}', response_model=schemas.PostResponse)
+@router.get('/{id}', response_model=posts.PostResponse)
 def get_post(id: str, db: Session = Depends(get_db), user_id: str = Depends(require_user)):
     post = db.query(models.Post).filter(models.Post.id == id).first()
     if not post:

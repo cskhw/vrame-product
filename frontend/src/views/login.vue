@@ -39,9 +39,10 @@
         <div class="login-form">
           <r-textfield
             :textfieldStyle="{
-              width: 'calc(100% - 1.5rem)',
+              width: 'calc(100% - 22px)',
               height: '2rem',
               marginBottom: '0.5rem',
+              fontSize: '1rem',
             }"
             :borders="{
               focus: `1px solid ${colors.vaildColor}`,
@@ -51,9 +52,10 @@
           </r-textfield>
           <r-textfield
             :textfieldStyle="{
-              width: 'calc(100% - 1.5rem)',
+              width: 'calc(100% - 22px)',
               height: '2rem',
               marginBottom: '0.5rem',
+              fontSize: '1rem',
             }"
             :borders="{
               focus: `1px solid ${colors.vaildColor}`,
@@ -63,12 +65,11 @@
           </r-textfield>
         </div>
         <div
-          :style="[guideMsgStyle]"
           v-if="isClickedLoginBtn && isInvaildLoginForm"
+          :style="[guideMsgStyle]"
         >
           {{ guideMsg }}
         </div>
-        <div class="login-footer">footer</div>
         <r-btn
           @click="onClickLoginBtn"
           :btnStyle="{
@@ -79,6 +80,7 @@
           :hoverColor="'white'"
           >로그인</r-btn
         >
+        <div class="login-footer">footer</div>
       </div>
     </r-main>
   </div>

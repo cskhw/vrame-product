@@ -5,7 +5,8 @@ from fastapi import APIRouter, Request, Response, status, Depends, HTTPException
 from pydantic import EmailStr
 
 from app import oauth2
-from .. import schemas, models, utils
+from .. import models, utils
+from app.schemas import auth
 from sqlalchemy.orm import Session
 from ..database import get_db
 from app.oauth2 import AuthJWT
@@ -19,7 +20,7 @@ REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
 
 @router.post('/register', status_code=status.HTTP_201_CREATED)
-async def create_user(payload: schemas.CreateUserSchema, request: Request, db: Session = Depends(get_db)):
+async def register(payload: auth.CreateUserSchema, request: Request, db: Session = Depends(get_db)):
     # Check if user already exist
     user_query = db.query(models.User).filter(
         models.User.email == EmailStr(payload.email.lower()))
@@ -64,7 +65,7 @@ async def create_user(payload: schemas.CreateUserSchema, request: Request, db: S
 
 
 @router.post('/login')
-def login(payload: schemas.LoginUserSchema, response: Response, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
+def login(payload: auth.LoginUserSchema, response: Response, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     # Check if the user exist
     user = db.query(models.User).filter(
         models.User.email == EmailStr(payload.email.lower())).first()
