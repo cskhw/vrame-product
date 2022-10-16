@@ -2,6 +2,7 @@ import axios, { type AxiosRequestConfig, type AxiosResponse } from "axios";
 
 import { HTTP_REQUEST_TIMEOUT } from "@/utils/common";
 import { getBaseUrl } from "@/api/utils";
+import { extractError } from "./error";
 
 const axiosInstance = axios.create({
   baseURL: getBaseUrl(),
@@ -27,6 +28,20 @@ axiosInstance.interceptors.response.use(
   }
 );
 
+async function authWrapper<
+  F extends (...args: any[]) => Promise<AxiosResponse<any>>
+>(fn: F): Promise<AxiosResponse<any>> {
+  let result: any;
+  try {
+    result = await fn();
+  } catch (e) {
+    const error = extractError(e);
+    console.log(error);
+  } finally {
+    return result;
+  }
+}
+
 const instance = {
   ...axiosInstance,
 
@@ -34,7 +49,7 @@ const instance = {
     url: string,
     config?: AxiosRequestConfig | undefined
   ): Promise<AxiosResponse<any>> {
-    return axiosInstance.get(url, config);
+    return authWrapper(() => axiosInstance.get(url, config));
   },
 
   getNaiveUrl: async function (

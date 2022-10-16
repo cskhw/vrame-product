@@ -98,15 +98,17 @@
 import { asyncDebounce } from "@/utils/asyncDebounce";
 import colors from "@/utils/colors";
 import { rgbToRgba } from "@/utils/vrame-utils";
-import { computed, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
 
-/**login form */
+/**login area */
 const isAutoSave = ref(false);
 const isClickedLoginBtn = ref(false);
 const guideMsg = computed(() => (isInvaildLoginForm.value ? "안된다" : "된다"));
 const isInvaildLoginForm = ref(false);
+
+const loginForm = reactive({});
 
 const guideMsgStyle = computed(() => {
   if (isInvaildLoginForm.value) {

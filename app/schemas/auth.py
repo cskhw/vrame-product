@@ -1,6 +1,3 @@
-from datetime import datetime
-from typing import List
-import uuid
 from pydantic import BaseModel, EmailStr, constr
 from app.schemas import users
 

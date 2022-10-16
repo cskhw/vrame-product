@@ -1,7 +1,6 @@
 from datetime import datetime
-from typing import List
 import uuid
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr
 
 
 class UserBaseSchema(BaseModel):

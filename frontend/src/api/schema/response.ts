@@ -1,49 +1,6 @@
-/** Global Response & Error */
-import type { PaymentStatus, TipItem } from "@/types/draft";
-import type { CaseMasterDataType } from "@/types/case";
-import type { SupportContentsItem } from "@/types/draft";
-import type { SupportCardItem } from "@/types/draft";
-import type { NoticeDetail } from "@/types/user";
-
 export interface SimpleResponse {
   status: boolean;
   detail: string;
-}
-
-export interface PresignedURL {
-  object: {
-    presigned_url: string;
-  };
-}
-export interface PresignedURLs {
-  object: Record<string, string>;
-}
-
-export interface PostResponsePresignedURL {
-  object: {
-    url: string;
-    fields: {
-      key: string;
-      policy: string;
-      [key: string]: string;
-    };
-  };
-}
-
-export interface PostResponsePresignedURLs {
-  object: {
-    urls: Record<
-      string,
-      {
-        url: string;
-        fields: {
-          key: string;
-          policy: string;
-          [key: string]: string;
-        };
-      }
-    >;
-  };
 }
 
 export interface ValidationError {
@@ -54,18 +11,6 @@ export interface ValidationError {
       type: string;
     }
   ];
-}
-
-export interface ThreadHoldError {
-  status: boolean;
-  detail: string;
-  request_info: object;
-}
-
-export interface BackendError {
-  status: boolean;
-  detail: string;
-  request_info: object;
 }
 
 /** auth response 리스트
