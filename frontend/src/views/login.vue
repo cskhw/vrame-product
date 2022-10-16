@@ -86,8 +86,8 @@
   </div>
 </template>
 <script setup lang="ts">
+import { asyncDebounce } from "@/utils/asyncDebounce";
 import colors from "@/utils/colors";
-import { mdiApi } from "@mdi/js";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -106,9 +106,11 @@ const guideMsgStyle = computed(() => {
   }
 });
 
-function onClickLoginBtn() {
+async function asyncLogin() {
   isClickedLoginBtn.value = true;
 }
+
+const onClickLoginBtn = asyncDebounce(asyncLogin);
 
 function onClickVrameIcon() {
   router.push("/");
