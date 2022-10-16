@@ -21,67 +21,74 @@
             @click="onClickVrameIcon"
           />
         </div>
-        <div class="login-contents"></div>
-        <div class="login-options">
-          <r-checkbox
-            v-model="isAutoSave"
-            label="로그인 유지"
-            :width="24"
-            :height="24"
-            viewBox="0 0 24 24"
-            :checkboxStyle="{
-              width: '24px',
-              height: '24px',
-            }"
-          >
-          </r-checkbox>
+        <div class="login-contents">
+          <div class="login-options">
+            <r-checkbox
+              v-model="isAutoSave"
+              label="로그인 유지"
+              :width="24"
+              :height="24"
+              viewBox="0 0 24 24"
+              :checkboxStyle="{
+                width: '24px',
+                height: '24px',
+              }"
+            >
+            </r-checkbox>
+          </div>
+          <div class="login-form">
+            <r-textfield
+              :textfieldStyle="{
+                width: 'calc(100% - 22px)',
+                height: '2rem',
+                marginBottom: '0.5rem',
+                fontSize: '1rem',
+              }"
+              :borders="{
+                focus: `1px solid ${colors.vaildColor}`,
+              }"
+              placeholder="아이디/인증 이메일"
+            >
+            </r-textfield>
+            <r-textfield
+              :textfieldStyle="{
+                width: 'calc(100% - 22px)',
+                height: '2rem',
+                marginBottom: '0.5rem',
+                fontSize: '1rem',
+              }"
+              :borders="{
+                focus: `1px solid ${colors.vaildColor}`,
+              }"
+              placeholder="비밀번호"
+            >
+            </r-textfield>
+            <div
+              v-if="isClickedLoginBtn && isInvaildLoginForm"
+              :style="[guideMsgStyle]"
+            >
+              {{ guideMsg }}
+            </div>
+            <r-btn
+              @click="onClickLoginBtn"
+              :btnStyle="{
+                backgroundColor: colors.vaildColor,
+                color: 'white',
+              }"
+              :hoverBgColor="`rgba(${colors.vaildColor}, .4)`"
+              :hoverColor="'white'"
+              >로그인</r-btn
+            >
+          </div>
+          <div class="login-menus">
+            <div>아이디 찾기</div>
+            <div>비밀번호 찾기</div>
+            <div>회원가입</div>
+          </div>
         </div>
-        <div class="login-form">
-          <r-textfield
-            :textfieldStyle="{
-              width: 'calc(100% - 22px)',
-              height: '2rem',
-              marginBottom: '0.5rem',
-              fontSize: '1rem',
-            }"
-            :borders="{
-              focus: `1px solid ${colors.vaildColor}`,
-            }"
-            placeholder="아이디/인증 이메일"
-          >
-          </r-textfield>
-          <r-textfield
-            :textfieldStyle="{
-              width: 'calc(100% - 22px)',
-              height: '2rem',
-              marginBottom: '0.5rem',
-              fontSize: '1rem',
-            }"
-            :borders="{
-              focus: `1px solid ${colors.vaildColor}`,
-            }"
-            placeholder="비밀번호"
-          >
-          </r-textfield>
+        <div class="login-footer">
+          Copyright © vrame Co., Ltd. All Rights Reserved.
         </div>
-        <div
-          v-if="isClickedLoginBtn && isInvaildLoginForm"
-          :style="[guideMsgStyle]"
-        >
-          {{ guideMsg }}
-        </div>
-        <r-btn
-          @click="onClickLoginBtn"
-          :btnStyle="{
-            backgroundColor: colors.vaildColor,
-            color: 'white',
-          }"
-          :hoverBgColor="`rgba(${colors.vaildColor}, .4)`"
-          :hoverColor="'white'"
-          >로그인</r-btn
-        >
-        <div class="">아이디 찾기 | 비밀번호 찾기 | 회원가입</div>
-        <div class="login-footer">footer</div>
       </div>
     </r-main>
   </div>
@@ -124,24 +131,63 @@ function onClickVrameIcon() {
   align-content: center;
   justify-content: center;
   width: 100%;
+  height: 100vh;
 
   .login-body {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     height: 100%;
     padding: 1rem 0;
     .login-header {
       width: 100%;
+      flex: 1;
     }
-    .login-options {
-      margin-bottom: 1rem;
-    }
+
     .login-contents {
       padding-top: 2rem;
+      flex: 6;
+      .login-options {
+        margin-bottom: 1rem;
+      }
       .login-form {
+      }
+      .login-menus {
+        margin-top: 1rem;
+        div {
+          color: #666;
+          font-size: 13px;
+          &:hover {
+            cursor: pointer;
+            text-decoration: underline;
+          }
+        }
+        div + div:before {
+          content: "";
+          display: inline-block;
+          position: relative;
+          margin: 0 8px;
+          top: 2px;
+          left: 0;
+          width: 1px;
+          height: 12px;
+          background: #e0e0e0;
+        }
+        width: 100%;
+        display: flex;
+        justify-content: center;
+      }
+      .login-sns {
       }
     }
 
     .login-footer {
+      width: 100%;
+      text-align: center;
+      color: #757575;
+      font-size: 9px;
+      line-height: 80px;
+      flex: 1;
     }
   }
 }
