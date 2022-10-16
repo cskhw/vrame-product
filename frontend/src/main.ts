@@ -1,10 +1,9 @@
 import pinia from "@/plugins/pinia";
 import { createApp, watch } from "vue";
+import vrame from "@/plugins/vrame";
 import App from "@/App.vue";
 import router from "./router";
 
 const app = createApp(App);
 
-import { createVrame } from "vrame";
-
-app.use(router).use(pinia).use(createVrame()).mount("#app");
+app.use(router).use(pinia).use(vrame).mount("#app");

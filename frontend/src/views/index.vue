@@ -7,6 +7,8 @@
         <r-icon
           link
           :iconStyle="{ width: '2rem', height: '2rem' }"
+          width="32"
+          height="32"
           viewBox="0 0 16 16"
           :icon="mdiReorderHorizontal"
           @click="isDrawer = !isDrawer"
@@ -20,7 +22,7 @@
           padding: 0,
         }"
         hover-bg-color="white"
-        ><img class="pt-btn" src="@/assets/images/vrame.png" width="50" />
+      >
       </r-btn>
     </r-appbar>
     <!-- drawer -->
@@ -29,6 +31,7 @@
         link
         :icon="{ icon: mdiAccount, color: 'rgba(0,0,0,0.8)', to: '/sappbar' }"
         hover-color="gray"
+        to="/login"
         ><template #title
           ><span style="font-weight: bold">로그인</span>하세요</template
         ></r-list
@@ -60,6 +63,8 @@ import {
   mdiBowl,
   mdiFood,
   mdiDesk,
+  mdiPencil,
+  mdiWalletTravel,
 } from "@mdi/js";
 import { ref } from "vue";
 
@@ -68,67 +73,64 @@ const isDrawer = ref(false);
 const drawerChildren = ref<TSList[]>([
   {
     icon: { icon: mdiSquareRoot, color: "gray" },
-    hoverColor: "blue",
+    hoverColor: "gray",
     title: "컴퓨터",
     to: "computer",
     link: true,
-    click: () => {
-      console.log("bluelbueblue");
-    },
   },
   {
     icon: { icon: mdiTablet, color: "gray" },
-    hoverColor: "blue",
+    hoverColor: "gray",
     title: "태블릿",
     to: "아웃도어",
     link: true,
   },
   {
     icon: { icon: mdiListBox, color: "gray" },
-    hoverColor: "blue",
+    hoverColor: "gray",
     title: "자동차",
     to: "",
     link: true,
   },
   {
     icon: { icon: mdiDesk, color: "gray" },
-    hoverColor: "blue",
+    hoverColor: "gray",
     title: "가구",
     to: "r-list",
     link: true,
   },
   {
     icon: { icon: mdiFood, color: "gray" },
-    hoverColor: "blue",
+    hoverColor: "gray",
     title: "식품",
     to: "r-icon",
     link: true,
   },
   {
     icon: { icon: mdiBowl, color: "gray" },
-    hoverColor: "blue",
+    hoverColor: "gray",
     title: "생활",
     to: "mdiLifebuoy",
     link: true,
   },
   {
     icon: { icon: mdiHanger, color: "gray" },
-    hoverColor: "blue",
+    hoverColor: "gray",
     title: "패션",
     to: "r-btn",
     link: true,
   },
 
   {
-    icon: { icon: mdiListBox, color: "gray" },
-    hoverColor: "blue",
+    icon: { icon: mdiPencil, color: "gray" },
+    hoverColor: "gray",
     title: "사무",
     to: "",
     link: true,
   },
   {
-    icon: { icon: mdiListBox, color: "gray" },
-    hoverColor: "blue",
+    icon: { icon: mdiWalletTravel, color: "gray" },
+    hoverColor: "gray",
     title: "여행",
     to: "",
     link: true,
