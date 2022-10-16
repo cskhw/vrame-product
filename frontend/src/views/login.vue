@@ -74,8 +74,9 @@
               :btnStyle="{
                 backgroundColor: colors.vaildColor,
                 color: 'white',
+                fontWeight: 'bold',
               }"
-              :hoverBgColor="`rgba(${colors.vaildColor}, .4)`"
+              :hoverBgColor="rgbToRgba(colors.vaildColor, '.8')"
               :hoverColor="'white'"
               >로그인</r-btn
             >
@@ -96,6 +97,7 @@
 <script setup lang="ts">
 import { asyncDebounce } from "@/utils/asyncDebounce";
 import colors from "@/utils/colors";
+import { rgbToRgba } from "@/utils/vrame-utils";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 const router = useRouter();
@@ -126,69 +128,4 @@ function onClickVrameIcon() {
 </script>
 <style lang="scss" scoped>
 @import "@/styles/views/login.scss";
-.login {
-  display: flex;
-  align-content: center;
-  justify-content: center;
-  width: 100%;
-  height: 100vh;
-
-  .login-body {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-    height: 100%;
-    padding: 1rem 0;
-    .login-header {
-      width: 100%;
-      flex: 1;
-    }
-
-    .login-contents {
-      padding-top: 2rem;
-      flex: 6;
-      .login-options {
-        margin-bottom: 1rem;
-      }
-      .login-form {
-      }
-      .login-menus {
-        margin-top: 1rem;
-        div {
-          color: #666;
-          font-size: 13px;
-          &:hover {
-            cursor: pointer;
-            text-decoration: underline;
-          }
-        }
-        div + div:before {
-          content: "";
-          display: inline-block;
-          position: relative;
-          margin: 0 8px;
-          top: 2px;
-          left: 0;
-          width: 1px;
-          height: 12px;
-          background: #e0e0e0;
-        }
-        width: 100%;
-        display: flex;
-        justify-content: center;
-      }
-      .login-sns {
-      }
-    }
-
-    .login-footer {
-      width: 100%;
-      text-align: center;
-      color: #757575;
-      font-size: 9px;
-      line-height: 80px;
-      flex: 1;
-    }
-  }
-}
 </style>

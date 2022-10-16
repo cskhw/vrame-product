@@ -538,7 +538,6 @@ export function setUpTitleInIdiom(
     return e?.message;
   }
 }
-dddddddd;
 
 // 숫자 배열 오름차순 정렬
 export const ascSort = (targetArray: any) => {
