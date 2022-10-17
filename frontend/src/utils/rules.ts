@@ -32,14 +32,23 @@ export const checkEmailValidation = (str: string) => emailExp.test(str);
 // 비밀번호 검증
 export const checkPasswordValidation = (str: string) => reg_pw4.test(str);
 
+// 전화번호 검증
+export function checkPhoneValidation(str: string, type: number) {
+  if (type === 0) return reg_pw1.test(str);
+  else if (type === 1) return reg_pw2.test(str);
+  else if (type === 2) return reg_pw3.test(str);
+}
+
 export const regStrs = {
-  numAndEn: "^[a-zA-Z0-9]",
   num: "^[0-9]",
   enUp: "^[A-Z]",
   enLo: "^[a-z]",
   enAll: "^[a-zA-Z]",
   ko: "^[가-힣]",
   enKo: "^[가-힣a-zA-Z]",
+  numAndEn: "^[a-zA-Z0-9]",
+  numAndKo: "^[가-힣0-9]",
+  numAndEnAndSp: "^[a-zA-z0-9$`~!@$!%*#^?&\\(\\)-_=+]",
 };
 
 export const checkBaseValidation = (
@@ -49,6 +58,8 @@ export const checkBaseValidation = (
   end?: number
 ) => {
   const isValid = new RegExp(`${regStr}+$`).test(str);
+  console.log(start, end);
+  console.log(!(start || end));
   if (!(start || end)) {
     return isValid;
   } else {
@@ -64,10 +75,3 @@ export const checkBaseValidation = (
     }
   }
 };
-
-// 전화번호 검증
-export function checkPhoneValidation(str: string, type: number) {
-  if (type === 0) return reg_pw1.test(str);
-  else if (type === 1) return reg_pw2.test(str);
-  else if (type === 2) return reg_pw3.test(str);
-}

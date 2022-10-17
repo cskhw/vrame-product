@@ -118,7 +118,7 @@
             <!-- 이메일 주소 -->
             <div class="signup-form-field-title">이메일 주소</div>
             <r-textfield
-              v-model="signupForm.email"
+              v-model="temp.email"
               style="margin-bottom: 10px"
               :textfieldStyle="{
                 width: 'calc(100% - 22px)',
@@ -154,7 +154,7 @@
                 fontSize: '1rem',
               }"
               :borders="signupInputBorder(1)"
-              placeholder="영문, 숫자 4자 이상, 최대 20자"
+              placeholder="숫자, 영문 4자 이상, 최대 20자"
             >
             </r-textfield>
             <!-- 아이디 유효성 안내 -->
@@ -326,6 +326,10 @@ const agreeTempContents = `제 1장 총칙
   ④ '회원'이라 함은 '회사' 에 개인정보를 제공하여 회원등록을 한 자로서, '회사' 의 정보를 지속적으로 제공받으며, '회사' 가 제공하는 서비스를 계속적으로 이용할 수 있는 자를 말합니다.
   ⑤ '비회원'이라 함은 회원에 가입하지 않고 '회사' 가 제공하는 서비스를 이용하는 자를 말합니다.`;
 
+const temp = {
+  email: "gusdn0828@gmail.com",
+};
+
 const signupForm = reactive({
   email: "",
   user_id: "",
@@ -415,8 +419,8 @@ async function asyncSignup() {
   console.log(isVaildSignupInputs.value);
 
   // 인풋들 유효성 체크
-  if (!checkEmailValidation(signupForm.email)) return showGuideMsg(0);
-  if (!checkBaseValidation(signupForm.user_id, regStrs.numAndEn, 4, 20))
+  if (!checkEmailValidation(temp.email)) return showGuideMsg(0);
+  if (!checkBaseValidation(signupForm.user_id, regStrs.numAndEnAndSp, 4, 20))
     return showGuideMsg(1);
   if (!checkEmailValidation(signupForm.password)) return showGuideMsg(2);
   if (!checkEmailValidation(signupForm.conform_password))
