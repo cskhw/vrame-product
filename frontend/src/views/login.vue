@@ -46,7 +46,7 @@
                 fontSize: '1rem',
               }"
               :borders="{
-                focus: `1px solid ${colors.vaildColor}`,
+                focus: `1px solid ${colors.danawaBlue}`,
               }"
               placeholder="이메일"
             >
@@ -62,7 +62,7 @@
                 fontSize: '1rem',
               }"
               :borders="{
-                focus: `1px solid ${colors.vaildColor}`,
+                focus: `1px solid ${colors.danawaBlue}`,
               }"
               placeholder="비밀번호"
             >
@@ -76,11 +76,11 @@
             <r-btn
               @click="onClickLoginBtn"
               :btnStyle="{
-                backgroundColor: colors.vaildColor,
+                backgroundColor: colors.danawaBlue,
                 color: 'white',
                 fontWeight: 'bold',
               }"
-              :hoverBgColor="rgbToRgba(colors.vaildColor, '.8')"
+              :hoverBgColor="rgbToRgba(colors.danawaBlue, '.8')"
               :hoverColor="'white'"
               >로그인</r-btn
             >
@@ -88,7 +88,7 @@
           <div class="login-menus">
             <div>아이디 찾기</div>
             <div>비밀번호 찾기</div>
-            <div>회원가입</div>
+            <div @click="$router.push('/signup')">회원가입</div>
           </div>
         </div>
         <div class="login-footer">
@@ -112,8 +112,6 @@ const isAutoSave = ref(false);
 const isClickedLoginBtn = ref(false);
 const guideMsg = computed(() => (isInvaildLoginForm.value ? "안된다" : "된다"));
 const isInvaildLoginForm = ref(false);
-
-const email = ref("");
 
 const loginForm = reactive({ email: "", password: "" });
 
