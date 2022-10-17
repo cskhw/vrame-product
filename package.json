@@ -1,0 +1,22 @@
+{
+  "name": "vrame-product",
+  "version": "1.0.0",
+  "description": "- vrame-product는 자체 개발 Vue UI Framework인 vrame을 이용해서 개발한 풀스택 프로젝트입니다.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "cd ./frontend && npm run dev",
+    "vrame": "cd ./frontend && npm remove vrame && npm install vrame"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/cskhw/cskhw-vrame-backend.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/cskhw/cskhw-vrame-backend/issues"
+  },
+  "homepage": "https://github.com/cskhw/cskhw-vrame-backend#readme"
+}

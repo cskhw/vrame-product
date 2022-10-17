@@ -5,7 +5,7 @@ from fastapi_jwt_auth import AuthJWT
 from pydantic import BaseModel
 
 from . import models
-from .database import get_db
+from .db import get_db
 from sqlalchemy.orm import Session
 from .config import settings
 

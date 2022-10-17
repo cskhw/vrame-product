@@ -24,7 +24,6 @@
         <div class="login-contents">
           <div class="login-options">
             <r-checkbox
-              v-model="isAutoSave"
               label="로그인 유지"
               :width="24"
               :height="24"
@@ -37,24 +36,29 @@
             </r-checkbox>
           </div>
           <div class="login-form">
+            <!-- 아이디 -->
             <r-textfield
+              v-model="loginForm.email"
+              style="margin-bottom: 10px"
               :textfieldStyle="{
                 width: 'calc(100% - 22px)',
                 height: '2rem',
-                marginBottom: '0.5rem',
                 fontSize: '1rem',
               }"
               :borders="{
                 focus: `1px solid ${colors.vaildColor}`,
               }"
-              placeholder="아이디/인증 이메일"
+              placeholder="이메일"
             >
             </r-textfield>
+            <!-- 비밀번호 -->
             <r-textfield
+              v-model="loginForm.password"
+              type="password"
+              style="margin-bottom: 10px"
               :textfieldStyle="{
                 width: 'calc(100% - 22px)',
                 height: '2rem',
-                marginBottom: '0.5rem',
                 fontSize: '1rem',
               }"
               :borders="{
@@ -95,6 +99,7 @@
   </div>
 </template>
 <script setup lang="ts">
+import api from "@/api/api";
 import { asyncDebounce } from "@/utils/asyncDebounce";
 import colors from "@/utils/colors";
 import { rgbToRgba } from "@/utils/vrame-utils";
@@ -108,11 +113,13 @@ const isClickedLoginBtn = ref(false);
 const guideMsg = computed(() => (isInvaildLoginForm.value ? "안된다" : "된다"));
 const isInvaildLoginForm = ref(false);
 
-const loginForm = reactive({});
+const email = ref("");
+
+const loginForm = reactive({ email: "", password: "" });
 
 const guideMsgStyle = computed(() => {
   if (isInvaildLoginForm.value) {
-    return {};
+    return { color: "red" };
   } else {
     return {};
   }
@@ -120,6 +127,11 @@ const guideMsgStyle = computed(() => {
 
 async function asyncLogin() {
   isClickedLoginBtn.value = true;
+  const response = await api.auth.login({
+    email: loginForm.email,
+    password: loginForm.password,
+  });
+  console.log(response);
 }
 
 const onClickLoginBtn = asyncDebounce(asyncLogin);

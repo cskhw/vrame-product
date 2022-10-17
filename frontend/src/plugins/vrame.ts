@@ -1,4 +1,3 @@
-import { createPinia } from "pinia";
 import { createVrame } from "vrame";
 
 const vrame = createVrame();

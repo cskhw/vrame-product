@@ -3,7 +3,7 @@ from .. import models
 from app.schemas import posts
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status, APIRouter, Response
-from ..database import get_db
+from ..db import get_db
 from app.oauth2 import require_user
 
 router = APIRouter()

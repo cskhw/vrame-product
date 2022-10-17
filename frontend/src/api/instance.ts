@@ -11,7 +11,9 @@ const axiosInstance = axios.create({
 
 // 요청 인터셉터
 axiosInstance.interceptors.request.use(
-  function (config: AxiosRequestConfig) {},
+  function (config: AxiosRequestConfig) {
+    return config;
+  },
   function (error) {
     console.log(error);
     return Promise.reject(error);

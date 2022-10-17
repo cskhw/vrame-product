@@ -2,7 +2,9 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.routers import posts, auth, users
-from app.consts import BASE_URL
+from app.consts import BASE_URL, MODE
+
+BASE_URL = MODE + BASE_URL
 
 app = FastAPI()
 
@@ -23,6 +25,6 @@ app.include_router(users.router, tags=['Users'], prefix=f'{BASE_URL}/users')
 app.include_router(posts.router, tags=['Posts'], prefix=f'{BASE_URL}/posts')
 
 
-@app.get(f'{BASE_URL}/')
+@app.get(BASE_URL)
 def root():
     return {'message': 'hello vrame'}

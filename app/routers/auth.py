@@ -6,9 +6,9 @@ from pydantic import EmailStr
 
 from app import oauth2
 from .. import models, utils
-from app.schemas import auth
+from app.schemas import auth, base
 from sqlalchemy.orm import Session
-from ..database import get_db
+from ..db import get_db
 from app.oauth2 import AuthJWT
 from ..config import settings
 from ..email import Email
@@ -64,7 +64,7 @@ async def register(payload: auth.CreateUserSchema, request: Request, db: Session
     return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
 
 
-@router.post('/login')
+@router.post('/login', response_model=base.SimpleResponse)
 def login(payload: auth.LoginUserSchema, response: Response, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     # Check if the user exist
     user = db.query(models.User).filter(
