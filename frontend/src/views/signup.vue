@@ -47,6 +47,7 @@
           <div class="signup-option-area">
             <!-- 모두 동의 체크박스 -->
             <r-checkbox
+              @click="onClickAgreeAllBtn"
               v-model="agreeAll"
               style="margin-bottom: 0.5rem"
               label="약관 모두 동의하기"
@@ -177,7 +178,7 @@
                 fontSize: '1rem',
               }"
               :borders="signupInputBorder(2)"
-              placeholder="비밀번호"
+              placeholder="숫자, 영문, 특수문자 포험 최소 8자 이상 20자 이하"
             >
             </r-textfield>
             <!-- 비밀번호 유효성 안내 -->
@@ -200,7 +201,7 @@
                 fontSize: '1rem',
               }"
               :borders="signupInputBorder(3)"
-              placeholder="비밀번호"
+              placeholder="숫자, 영문, 특수문자 포험 최소 8자 이상 20자 이하"
             >
             </r-textfield>
             <!-- 비밀번호 확인 유효성 안내 -->
@@ -223,7 +224,7 @@
                 fontSize: '1rem',
               }"
               :borders="signupInputBorder(4)"
-              placeholder="비밀번호"
+              placeholder="한글 8자, 영문 16자 까지 가능"
             >
             </r-textfield>
             <!-- 이름 유효성 안내 -->
@@ -246,7 +247,7 @@
                 fontSize: '1rem',
               }"
               :borders="signupInputBorder(5)"
-              placeholder="비밀번호"
+              placeholder="최대 8자 까지 가능"
             >
             </r-textfield>
             <!-- 닉네임 유효성 안내 -->
@@ -282,11 +283,7 @@
 import api from "@/api/api";
 import { asyncDebounce } from "@/utils/asyncDebounce";
 import colors from "@/utils/colors";
-import {
-  checkEmailVaild,
-  checkEnVaild,
-  checkPasswordVaild,
-} from "@/utils/rules";
+import { checkEmailValidation } from "@/utils/rules";
 import { rgbToRgba } from "@/utils/vrame-utils";
 import { mdiChevronDown } from "@mdi/js";
 import { computed, reactive, ref, toRef, watch } from "vue";
@@ -294,10 +291,12 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-/**signup UI area */
+function onClickVrameIcon() {
+  router.push("/");
+}
 const curTabIdx = ref(1);
 
-// 약관 동의 UI
+/**약관 동의 부분 */
 const agreeAll = ref(false);
 const tabLabels = ref(["일반회원", "사업자 회원"]);
 const agreeLabels = ref({
@@ -337,17 +336,22 @@ const signupForm = reactive({
   },
 });
 
-watch(agreeAll, (newVal) => {
+// 약관 모두 동의
+function onClickAgreeAllBtn() {
   if (agreeAll.value) {
     for (const key in signupForm.agreement) {
       // @ts-ignore 타스가 키 에러 못잡음
       signupForm.agreement[key] = true;
     }
   } else {
-    agreeAll.value = false;
+    for (const key in signupForm.agreement) {
+      // @ts-ignore 타스가 키 에러 못잡음
+      signupForm.agreement[key] = false;
+    }
   }
-});
+}
 
+// 약관 중 하나라도 false가 있으면 모두 동의 해제
 watch(signupForm, (newVal) => {
   let result = true;
   for (const key in signupForm.agreement)
@@ -406,12 +410,13 @@ async function asyncSignup() {
   console.log(isVaildSignupInputs.value);
 
   // 인풋들 유효성 체크
-  if (!checkEmailVaild(signupForm.email)) return showGuideMsg(0);
-  if (!checkEmailVaild(signupForm.user_id)) return showGuideMsg(1);
-  if (!checkEmailVaild(signupForm.password)) return showGuideMsg(2);
-  if (!checkEmailVaild(signupForm.email)) return showGuideMsg(3);
-  if (!checkEmailVaild(signupForm.email)) return showGuideMsg(4);
-  if (!checkEmailVaild(signupForm.email)) return showGuideMsg(5);
+  if (!checkEmailValidation(signupForm.email)) return showGuideMsg(0);
+  if (!checkEmailValidation(signupForm.user_id)) return showGuideMsg(1);
+  if (!checkEmailValidation(signupForm.password)) return showGuideMsg(2);
+  if (!checkEmailValidation(signupForm.conform_password))
+    return showGuideMsg(3);
+  if (!checkEmailValidation(signupForm.name)) return showGuideMsg(4);
+  if (!checkEmailValidation(signupForm.nickname)) return showGuideMsg(5);
 
   // 유효성 통과했으므로 전부 true로 만듬
   isVaildSignupInputs.value = isVaildSignupInputs.value.map(() => true);
@@ -421,11 +426,8 @@ async function asyncSignup() {
   console.log(response);
 }
 
+// 회원가입 클릭 디바운스
 const onClickSignupBtn = asyncDebounce(asyncSignup);
-
-function onClickVrameIcon() {
-  router.push("/");
-}
 </script>
 <style lang="scss" scoped>
 @import "@/styles/views/signup.scss";
