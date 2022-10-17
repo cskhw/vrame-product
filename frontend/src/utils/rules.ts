@@ -29,89 +29,45 @@ const reg_privacy_num = /([0-9]{2}(0[1-9]|1[0-2])(0[1-9]|[1,2][0-9]|3[0,1]))/; /
 
 // 이메일 검증
 export const checkEmailValidation = (str: string) => emailExp.test(str);
-
 // 비밀번호 검증
 export const checkPasswordValidation = (str: string) => reg_pw4.test(str);
 
-// 이름 검증
-export function checkEnOrKoValidation(
-  str: string,
-  start?: number,
-  end?: number
-) {
-  const isEn = enExp.test(str);
-  const isKo = koExp.test(str);
-  if (!(start || end)) {
-    // 시작, 끝 값 없으면
-    return isEn || isKo;
-  } else {
-    // 시작, 끝 중 하나라도 있으면
-    if (end) {
-      // 둘 다 있으면
-      if (isEn) {
-        const reg = new RegExp(`^[a-zA-Z]+${`{${start},${end}}`}$`);
-        return reg.test(str);
-      } else if (isKo) {
-        const reg = new RegExp(`^[가-힣]+${`{${start},${end}}`}$`);
-        console.log(`^[가힣]+${`{${start},${end}}`}$`);
-        return reg.test(str);
-      } else return false;
-    } else {
-      // 시작만 있으면
-      if (isEn) {
-        const reg = new RegExp(`^[a-zA-Z]+${`{${start}`},}$`);
-        return reg.test(str);
-      } else if (isKo) {
-        const reg = new RegExp(`^[가-힣]+${`{${start}`},}$`);
-        return reg.test(str);
-      } else return false;
-    }
-  }
-}
+export const regStrs = {
+  numAndEn: "^[a-zA-Z0-9]",
+  num: "^[0-9]",
+  enUp: "^[A-Z]",
+  enLo: "^[a-z]",
+  enAll: "^[a-zA-Z]",
+  ko: "^[가-힣]",
+  enKo: "^[가-힣a-zA-Z]",
+};
 
-// 영어 and 한글 검증
-export function checkEnAndKoVaildation(
+export const checkBaseValidation = (
   str: string,
+  regStr: string,
   start?: number,
   end?: number
-) {
+) => {
+  const isValid = new RegExp(`${regStr}+$`).test(str);
   if (!(start || end)) {
-    const reg = new RegExp(`^[가-힣a-zA-Z]+$`);
-    return reg.test(str);
+    return isValid;
   } else {
     // 시작, 끝 중 하나라도 있으면
     if (end) {
       // 둘 다 있으면
-      const reg = new RegExp(`^[가-힣a-zA-Z]+${`{${start},${end}}`}$`);
-      console.log(`^[가힣]+${`{${start},${end}}`}$`);
+      const reg = new RegExp(`${regStr}${`{${start},${end}}`}$`);
       return reg.test(str);
     } else {
       // 시작만 있으면
-      const reg = new RegExp(`^[가-힣a-zA-Z]+${`{${start},}`}$`);
-      console.log(`^[가힣]+${`{${start},${end}}`}$`);
+      const reg = new RegExp(`${regStr}${`{${start},}`}$`);
       return reg.test(str);
     }
   }
-}
+};
+
 // 전화번호 검증
-export function checkPhoneVaild(str: string) {
-  let result = false;
-  let regExp = /^[0-9]+$/;
-
-  if (regExp.test(str)) result = true;
-
-  return result;
+export function checkPhoneValidation(str: string, type: number) {
+  if (type === 0) return reg_pw1.test(str);
+  else if (type === 1) return reg_pw2.test(str);
+  else if (type === 2) return reg_pw3.test(str);
 }
-
-// 영어 검증
-export function checkEnVaild(str: string) {
-  return enExp.test(str);
-}
-
-// 한글 검증
-export function checkKoVaild(str: string) {
-  return koExp.test(str);
-}
-
-// 영한 검증
-export const checkEnKoVaild = (str: string) => enKoExp.test(str);

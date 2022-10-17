@@ -146,8 +146,7 @@
             <!-- 아이디 -->
             <div class="signup-form-field-title">아이디</div>
             <r-textfield
-              v-model="signupForm.password"
-              type="password"
+              v-model="signupForm.user_id"
               style="margin-bottom: 10px"
               :textfieldStyle="{
                 width: 'calc(100% - 22px)',
@@ -155,7 +154,7 @@
                 fontSize: '1rem',
               }"
               :borders="signupInputBorder(1)"
-              placeholder="영문 4자 이상, 최대 20자"
+              placeholder="영문, 숫자 4자 이상, 최대 20자"
             >
             </r-textfield>
             <!-- 아이디 유효성 안내 -->
@@ -283,7 +282,13 @@
 import api from "@/api/api";
 import { asyncDebounce } from "@/utils/asyncDebounce";
 import colors from "@/utils/colors";
-import { checkEmailValidation } from "@/utils/rules";
+import {
+  checkBaseValidation,
+  checkEmailValidation,
+  checkEnOrKoValidation,
+  checkEnValidation,
+  regStrs,
+} from "@/utils/rules";
 import { rgbToRgba } from "@/utils/vrame-utils";
 import { mdiChevronDown } from "@mdi/js";
 import { computed, reactive, ref, toRef, watch } from "vue";
@@ -411,7 +416,8 @@ async function asyncSignup() {
 
   // 인풋들 유효성 체크
   if (!checkEmailValidation(signupForm.email)) return showGuideMsg(0);
-  if (!checkEmailValidation(signupForm.user_id)) return showGuideMsg(1);
+  if (!checkBaseValidation(signupForm.user_id, regStrs.numAndEn, 4, 20))
+    return showGuideMsg(1);
   if (!checkEmailValidation(signupForm.password)) return showGuideMsg(2);
   if (!checkEmailValidation(signupForm.conform_password))
     return showGuideMsg(3);
