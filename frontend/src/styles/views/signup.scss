@@ -63,17 +63,21 @@
           height: 8rem;
           background-color: $light-gray5;
           overflow: auto;
-          padding: 12px;
-          font-size: 12px;
+          padding: 0.75rem;
+          font-size: 0.75rem;
           color: #666;
           box-sizing: border-box;
-          border: 0;
           background-color: #f9f9f9;
         }
       }
       .signup-form {
         .signup-form-field-title {
-          margin-bottom: 10px;
+          margin-bottom: 0.625rem;
+        }
+        .signup-form-guide-msg {
+          color: red;
+          font-size: 13px;
+          margin-bottom: 0.5rem;
         }
       }
     }
