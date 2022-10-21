@@ -38,6 +38,7 @@ async function authWrapper<
     result = await fn();
   } catch (e) {
     const error = extractError(e);
+    alert(error.message);
     console.log(error);
   } finally {
     return result;
@@ -68,7 +69,7 @@ const instance = {
     data?: any,
     config?: AxiosRequestConfig | undefined
   ): Promise<AxiosResponse<any>> {
-    return axiosInstance.post(url, data, config);
+    return authWrapper(() => axiosInstance.post(url, data, config));
   },
 
   put: async function (

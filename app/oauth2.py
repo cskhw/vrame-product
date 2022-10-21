@@ -4,10 +4,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi_jwt_auth import AuthJWT
 from pydantic import BaseModel
 
-from . import models
-from .db import get_db
+from .db import models
+from .db.db import get_db
 from sqlalchemy.orm import Session
-from .config import settings
+from .common.config import settings
 
 
 class Settings(BaseModel):

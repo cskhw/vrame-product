@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.config import settings
+from app.common.config import settings
 from app.routers import posts, auth, users
-from app.consts import BASE_URL, MODE
+from app.common.consts import BASE_URL, MODE
 
 BASE_URL = MODE + BASE_URL
 
@@ -10,6 +10,9 @@ app = FastAPI()
 
 origins = [
     settings.CLIENT_ORIGIN,
+    "http://localhost:80",
+    "http://localhost:81",
+    "http://localhost:3000",
 ]
 
 app.add_middleware(

@@ -15,15 +15,12 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRES_IN: int
     JWT_ALGORITHM: str
 
+    EMAIL_ADDR: str
+    EMAIL_PW: str
+
     CLIENT_ORIGIN: str
 
     VERIFICATION_SECRET: str
-
-    EMAIL_HOST: str
-    EMAIL_PORT: int
-    EMAIL_USERNAME: str
-    EMAIL_PASSWORD: str
-    EMAIL_FROM: EmailStr
 
     class Config:
         env_file = './.env'

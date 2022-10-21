@@ -1,9 +1,9 @@
 import uuid
-from .. import models
+from ..db import models
 from app.schemas import posts
 from sqlalchemy.orm import Session
 from fastapi import Depends, HTTPException, status, APIRouter, Response
-from ..db import get_db
+from ..db.db import get_db
 from app.oauth2 import require_user
 
 router = APIRouter()

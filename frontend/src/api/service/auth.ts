@@ -1,5 +1,9 @@
 import instance from "@/api/instance";
-import type { LoginRequest, RegisterRequest } from "@/api/schema/request";
+import type {
+  LoginRequest,
+  RegisterRequest,
+  VerifyEmailRequest,
+} from "@/api/schema/request";
 import type {
   AuthTokenResponse,
   RefreshedSessionTimeResponse,
@@ -14,4 +18,8 @@ export default {
     instance.post("/auth/registor", params),
   login: (params: LoginRequest): Promise<AxiosResponse<SimpleResponse>> =>
     instance.post("/auth/login", params),
+  requestEmailCode: (
+    params: VerifyEmailRequest
+  ): Promise<AxiosResponse<SimpleResponse>> =>
+    instance.post("/auth/request_email_code", params),
 };

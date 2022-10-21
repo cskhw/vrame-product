@@ -1,5 +1,7 @@
 export default {
   // colors
+  white: "white",
+
   lightGray1: "#555555",
   lightGray2: "#b3b3b3",
   lightGray3: "#919191",

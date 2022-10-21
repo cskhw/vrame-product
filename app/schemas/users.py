@@ -1,7 +1,6 @@
 from datetime import datetime
 import uuid
-from pydantic import BaseModel, EmailStr
-
+from pydantic import BaseModel, EmailStr,constr
 
 class UserBaseSchema(BaseModel):
     name: str
@@ -11,8 +10,19 @@ class UserBaseSchema(BaseModel):
     class Config:
         orm_mode = True
 
-
 class UserResponse(UserBaseSchema):
     id: uuid.UUID
     created_at: datetime
     updated_at: datetime
+
+class CreateUserSchema(UserBaseSchema):
+    password: constr(min_length=8)
+    passwordConfirm: str
+    role: str = 'user'
+    verified: bool = False
+
+class UpdateUserSchema(UserBaseSchema):
+    password: constr(min_length=8)
+    passwordConfirm: str
+    role: str = 'user'
+    verified: bool = False

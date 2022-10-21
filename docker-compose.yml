@@ -34,7 +34,7 @@ services:
       - ./frontend/:/var/www/html/app
     tty: true
     env_file:
-      - ./frontend/.env
+      - ./.env
 
   postgres:
     container_name: postgres

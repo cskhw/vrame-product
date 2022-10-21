@@ -117,19 +117,72 @@
           <div class="signup-form">
             <!-- 이메일 주소 -->
             <div class="signup-form-field-title">이메일 주소</div>
-            <r-textfield
-              v-model="signupForm.email"
-              style="margin-bottom: 10px"
-              :textfieldStyle="{
-                width: 'calc(100% - 22px)',
-                height: '2rem',
-                fontSize: '1rem',
-              }"
-              :invaildStyle="{ border: '1px solid black' }"
-              :borders="signupInputBorder(0)"
-              placeholder="이메일 주소 입력"
-            >
-            </r-textfield>
+            <div style="display: flex">
+              <r-textfield
+                v-model="signupForm.email"
+                style="margin-bottom: 10px; margin-right: 1rem"
+                :textfieldStyle="{
+                  width: 'calc(100% - 22px)',
+                  height: '2rem',
+                  fontSize: '1rem',
+                }"
+                :invaildStyle="{ border: '1px solid black' }"
+                :borders="signupInputBorder(0)"
+                placeholder="이메일 주소 입력"
+              >
+              </r-textfield>
+              <r-btn
+                :btnStyle="{
+                  width: '120px',
+                  border: `1px solid ${colors.borderColor}`,
+                  height: '2.25rem',
+                }"
+                :hoverBgColor="colors.danawaBlue"
+                :hoverColor="colors.white"
+                :disabledStyle="{
+                  backgroundColor: 'gray',
+                  color: 'white',
+                }"
+                :disabled="!signupForm.email.length"
+                @click="onClickRequestCodeBtn"
+                >인증코드 요청
+              </r-btn>
+            </div>
+
+            <!-- 이메일 인증 -->
+            <div class="signup-form-field-title">이메일 인증</div>
+            <div style="display: flex">
+              <r-textfield
+                v-model="signupForm.email_verify_code"
+                style="margin-bottom: 10px; margin-right: 1rem"
+                placeholder="인증코드 입력"
+                :textfieldStyle="{
+                  width: 'calc(100% - 22px)',
+                  height: '2rem',
+                  fontSize: '1rem',
+                }"
+                :invaildStyle="{ border: '1px solid black' }"
+                :borders="signupInputBorder(0)"
+                :disabled="!signupForm.email.length"
+                rule="num"
+              >
+              </r-textfield>
+              <r-btn
+                :btnStyle="{
+                  width: '120px',
+                  border: `1px solid ${colors.borderColor}`,
+                  height: '2.25rem',
+                }"
+                :hoverBgColor="colors.danawaBlue"
+                :hoverColor="colors.white"
+                :disabledStyle="{
+                  backgroundColor: 'gray',
+                  color: 'white',
+                }"
+                :disabled="signupForm.email_verify_code.length < 6"
+                >인증하기
+              </r-btn>
+            </div>
             <!-- 이메일 유효성 안내 -->
             <div
               class="signup-form-guide-msg"
@@ -259,7 +312,6 @@
             </div>
             <r-btn
               style="margin-top: 2rem; margin-bottom: 4rem"
-              @click="onClickSignupBtn"
               :btnStyle="{
                 backgroundColor: colors.danawaBlue,
                 color: 'white',
@@ -276,6 +328,7 @@
               "
               :hoverColor="'white'"
               :disabled="!isFillAllInputs"
+              @click="onClickSignupBtn"
               >회원가입</r-btn
             >
           </div>
@@ -337,13 +390,16 @@ const temp = {
   email: "gusdn0828@gmail.com",
 };
 
+// 회원가입 폼, 변수들
 const signupForm = reactive({
   email: "",
+  email_verify_code: "",
   user_id: "",
   password: "",
   conform_password: "",
   name: "",
   nickname: "",
+  verify: false,
   agreement: {
     age14: false,
     serviceAgreement: false,
@@ -439,6 +495,19 @@ watch(signupForm, () => {
   } else isFillAllInputs.value = false;
 });
 
+async function requestCode() {
+  const response = await api.auth.requestEmailCode({
+    email: signupForm.email,
+  });
+  if (response?.status !== 200) {
+    return false;
+  }
+  alert("인증코드를 요청했습니다.");
+  console.log(response);
+}
+
+const onClickRequestCodeBtn = asyncDebounce(requestCode);
+
 // 유효성 체크한 후 회원가입 요청
 async function asyncSignup() {
   // 한 번 클릭한 후부터 가이드 메세지 보여줌
@@ -459,7 +528,15 @@ async function asyncSignup() {
   isVaildSignupInputs.value = isVaildSignupInputs.value.map(() => true);
 
   // 회원가입 요청
-  const response = await api.auth.register({});
+  const response = await api.auth.register({
+    email: signupForm.email,
+    name: "",
+    password: "",
+    passwordConfirm: "",
+    photo: "",
+    role: "",
+    verified: false,
+  });
   console.log(response);
 }
 
