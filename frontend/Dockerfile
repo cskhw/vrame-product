@@ -1,11 +1,13 @@
-FROM node:slim
+FROM node:lts
 
 WORKDIR /var/www/html/app/
 
 COPY package*.json ./
 
-RUN npm install
-
 COPY . /app
 
+RUN npm install --production
+
 CMD [ "npm", "run", "dev"]
+
+EXPOSE 80

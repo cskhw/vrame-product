@@ -118,7 +118,7 @@
             <!-- 이메일 주소 -->
             <div class="signup-form-field-title">이메일 주소</div>
             <r-textfield
-              v-model="temp.email"
+              v-model="signupForm.email"
               style="margin-bottom: 10px"
               :textfieldStyle="{
                 width: 'calc(100% - 22px)',
@@ -265,8 +265,17 @@
                 color: 'white',
                 fontWeight: 'bold',
               }"
-              :hoverBgColor="rgbToRgba(colors.danawaBlue, '.8')"
+              :disabledStyle="{
+                backgroundColor: colors.lightGray1,
+                cursor: 'unset',
+              }"
+              :hoverBgColor="
+                isFillAllInputs
+                  ? rgbToRgba(colors.danawaBlue, '.8')
+                  : colors.lightGray4
+              "
               :hoverColor="'white'"
+              :disabled="!isFillAllInputs"
               >회원가입</r-btn
             >
           </div>
@@ -285,8 +294,6 @@ import colors from "@/utils/colors";
 import {
   checkBaseValidation,
   checkEmailValidation,
-  checkEnOrKoValidation,
-  checkEnValidation,
   regStrs,
 } from "@/utils/rules";
 import { rgbToRgba } from "@/utils/vrame-utils";
@@ -396,8 +403,10 @@ const guideMsgStyle = computed(() => (idx: number) => {
   }
 });
 
+// 회원가입 버튼 클릭 유무, 인풋 유효성 유무
 const isClickedSignupBtn = ref(false);
 const isVaildSignupInputs = ref([false, false, false, false, false, false]);
+const isFillAllInputs = ref(false);
 
 // 한 번 클릭 && 비유효: false
 const isShowInvaildInputUi = computed(() => (idx: number) => {
@@ -411,6 +420,24 @@ function showGuideMsg(idx: number) {
   console.log(isVaildSignupInputs.value);
   return false;
 }
+
+watch(signupForm, () => {
+  console.log(isFillAllInputs.value);
+  console.log(signupForm);
+  if (
+    signupForm.email &&
+    signupForm.user_id &&
+    signupForm.password &&
+    signupForm.conform_password &&
+    signupForm.name &&
+    signupForm.nickname &&
+    signupForm.agreement.age14 &&
+    signupForm.agreement.serviceAgreement &&
+    signupForm.agreement.privacyAgreement
+  ) {
+    isFillAllInputs.value = true;
+  } else isFillAllInputs.value = false;
+});
 
 // 유효성 체크한 후 회원가입 요청
 async function asyncSignup() {
