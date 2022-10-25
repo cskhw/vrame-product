@@ -1,17 +1,21 @@
 import uuid
-from .db import Base
+
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, String, Boolean, text
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
+from app.db.db import Base
+
 
 class User(Base):
     __tablename__ = 'users'
+
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
                 default=uuid.uuid4)
     name = Column(String,  nullable=False)
+    test = Column(String,  nullable=False)
     email = Column(String, unique=True, nullable=False)
-    password = Column(String, nullable=False)
+    pwshash = Column(String, nullable=False)
     photo = Column(String, nullable=True)
     verification_code = Column(String, nullable=True)
     is_active = Column(Boolean, nullable=False, server_default='False')
@@ -24,6 +28,7 @@ class User(Base):
 
 class Post(Base):
     __tablename__ = 'posts'
+
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
                 default=uuid.uuid4)
     user_id = Column(UUID(as_uuid=True), ForeignKey(

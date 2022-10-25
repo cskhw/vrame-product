@@ -37,6 +37,7 @@ async function authWrapper<
   try {
     result = await fn();
   } catch (e) {
+    console.log(e);
     const error = extractError(e);
     alert(error.message);
     console.log(error);

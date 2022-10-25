@@ -14,6 +14,7 @@
           @click="isDrawer = !isDrawer"
         >
         </r-icon>
+        <!-- 타이틀 -->
       </div>
       <r-btn
         to="/"
@@ -23,7 +24,9 @@
         }"
         hover-bg-color="white"
       >
+        <img width="50" src="@/assets/images/vrame.png" />
       </r-btn>
+      <div>핵폐기물 놀이터</div>
     </r-appbar>
     <!-- drawer -->
     <r-drawer v-model="isDrawer">

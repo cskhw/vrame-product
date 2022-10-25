@@ -8,7 +8,8 @@ import packageJson from "./package.json";
 // https://vitejs.dev/config/
 export default defineConfig({
   server: {
-    port: 80,
+    host: true,
+    port: 3000,
   },
   resolve: {
     alias: {

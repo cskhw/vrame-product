@@ -1,23 +1,13 @@
 <template>
   <div class="home">
     <h1 class="home-icon">V</h1>
-    <h1 class="home-title">Most Simple Vue Ui Framework</h1>
-    <div class="home-desc">No Ui Framework Dependency.</div>
-    <div class="home-desc">Simplipy is simple.</div>
+    <h1 class="home-title">핵폐기물 놀이터 개발 중</h1>
+    <div class="home-desc">
+      사용 가능 예정 서비스: 씹덕 이미지 만들기, 게시판
+    </div>
+    <div class="home-desc">사용 가능 서비스: 로그인, 회원가입</div>
 
     <div class="home-btns-box">
-      <r-btn
-        to="introduction"
-        :btnStyle="{ width: '10rem', backgroundColor: 'black', color: 'white' }"
-        style="margin-right: 2rem"
-      >
-        <r-icon
-          style="margin-right: 0.5rem"
-          color="white"
-          :icon="mdiSimpleIcons"
-        />
-        GET STARTED</r-btn
-      >
       <r-btn
         href="https://github.com/cskhw/simplify"
         :btnStyle="{ width: '10rem', backgroundColor: 'gray', color: 'white' }"
@@ -33,7 +23,7 @@
   </div>
 </template>
 <script setup lang="ts">
-import { mdiGithub, mdiSimpleIcons } from "@mdi/js";
+import { mdiGithub } from "@mdi/js";
 </script>
 <style lang="scss" scoped>
 @import "@/styles/views/index";

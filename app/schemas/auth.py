@@ -13,7 +13,9 @@ class EmailRecipients(BaseModel):
 class SendEmail(BaseModel):
     email_to: List[EmailRecipients]
 
-class RequestVerificationCodeSchema(BaseModel):
+class RequestEmailCodeSchema(BaseModel):
     email: EmailStr
+
 class VerifyEmailCodeSchema(BaseModel):
+    email: EmailStr
     code: str

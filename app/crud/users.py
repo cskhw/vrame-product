@@ -1,19 +1,15 @@
-from http.client import HTTPException
-from typing import Any, Generic, List, Optional, Type, TypeVar
+from typing import Generic, Optional, Type, TypeVar
 
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.orm import Session
 from app.db.db import get_db
 from app.db.models import User
 
 from app.schemas import users
 from pydantic import EmailStr
 
-UserModel = TypeVar("UserModel", bound=User)
 CreateUserSchema = TypeVar("CreateUserSchema", bound=users.CreateUserSchema)
 UpdateUserSchema = TypeVar("UpdateUserSchema", bound=users.UpdateUserSchema)
 
-class CRUDUser(Generic[UserModel, CreateUserSchema, UpdateUserSchema]):  # 1
+class CRUDUser(User, Generic[CreateUserSchema, UpdateUserSchema]):  # 1
     def __init__(self):  # 2
         """
         CRUD object with default methods to Create, Read, Update, Delete (CRUD).
@@ -21,19 +17,22 @@ class CRUDUser(Generic[UserModel, CreateUserSchema, UpdateUserSchema]):  # 1
         * `model`: A SQLAlchemy model class
         * `schema`: A Pydantic model (schema) class
         """
-        self.model = Type[UserModel]
+        self.model: Type[User] = User
         self.db = next(get_db())
 
 
-    def get(self, email: EmailStr) -> Optional[UserModel]:
-        return self.db.query(self.model).filter(self.model.email == email).first()  # 3
+    def get(self, email: EmailStr) -> Optional[User]:
+        """
+        이메일이 같은 유저 데이터 가져옴
+        """
+        return self.db.query(User).filter(self.model.email == email).first()  # 3
 
     # def get_multi(
     #     self, db: Session, *, skip: int = 0, limit: int = 100
-    # ) -> List[UserModel]:
+    # ) -> List[User]:
     #     return db.query(self.model).offset(skip).limit(limit).all()  # 4
 
-    # def create(self, db: Session, *, obj_in: CreateUserSchema) -> UserModel:
+    # def create(self, db: Session, *, obj_in: CreateUserSchema) -> User:
     #     obj_in_data = jsonable_encoder(obj_in)
     #     db_obj = self.model(**obj_in_data)  # type: ignore
     #     db.add(db_obj)
@@ -41,7 +40,7 @@ class CRUDUser(Generic[UserModel, CreateUserSchema, UpdateUserSchema]):  # 1
     #     db.refresh(db_obj)
     #     return db_obj
 
-    # def update(self, db: Session, *, id: int, obj_in: UpdateUserSchema) -> UserModel:
+    # def update(self, db: Session, *, id: int, obj_in: UpdateUserSchema) -> User:
     #     obj_in_data = jsonable_encoder(obj_in)
     #     db_obj = self.model(**obj_in_data)  # type: ignore
 
@@ -55,7 +54,7 @@ class CRUDUser(Generic[UserModel, CreateUserSchema, UpdateUserSchema]):  # 1
     #     db.commit()
     #     return updated_obj
 
-    # def delete(self, db: Session, id: int) -> UserModel:        
+    # def delete(self, db: Session, id: int) -> User:        
     #     query = db.query(self.model).filter(self.model.id == id)
     #     deleted_obj = query.first()
 

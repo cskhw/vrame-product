@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "fastapi"
+version = "0.1.0"
+description = "vrame-product's fastapi backend"
+authors = ["cskhw <51100329+cskhw@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pydantic = {extras = ["dotenv"], version = "^1.10.2"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,1 +1,1 @@
-__all__ = ["routers", "schemas", "templates", "utils"]
+__all__ = ["routers", "schemas", "templates", "utils", 'alembic']

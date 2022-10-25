@@ -10,4 +10,4 @@ RUN npm install --production
 
 CMD [ "npm", "run", "dev"]
 
-EXPOSE 80
+EXPOSE 3000

@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import timedelta
 import hashlib
 import os
@@ -5,6 +6,9 @@ from random import randbytes
 from typing import List
 from fastapi import APIRouter, Request, Response, status, Depends, HTTPException, BackgroundTasks
 from pydantic import EmailStr
+
+from app.error import InvaildValueException
+from app.utils.auth import hash_password, is_email_exist, verify_password
 from ..db import models
 
 from app import oauth2
@@ -14,59 +18,44 @@ from sqlalchemy.orm import Session
 from ..db.db import get_db
 from app.oauth2 import AuthJWT
 from ..common.config import settings
-import yagmail
 
 router = APIRouter()
 ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRES_IN
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
-def send_email(**kwargs):
-    email_content = """
-    <div style="width: 400px; height: 300px; padding: 16px; background-color: white; border: 1px solid #b3b3b3">
-        <div style=><strong>{}</strong>님, 안녕하세요. <br/><strong>vrame</strong>을 이용해주셔서 감사합니다!</div>
-        <div>인증코드는 <strong style="color: #2964e0">{}</strong>입니다. 정확하게 입력해주세요.</div><br/>
-        <div style="font-size: 12px; color: gray">Copyright © vrame Co., Ltd. All Rights Reserved.</div>
-    </div>
-    
+codes = defaultdict(str)
+
+
+@router.post('/request_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
+async def request_email_code(payload: auth.RequestEmailCodeSchema, *, background_tasks: BackgroundTasks):
+    """이메일 코드 발송
+    1. 유저 이메일이 존재하는지 체크
+    2. 존재하지 않으면 예외 처리
+    3. 존재하면 인증코드 발송
     """
 
-    email: auth.EmailRecipients = kwargs.get('email', None)
-    email_addr = os.environ.get("EMAIL_ADDR", None)
-    email_pw = os.environ.get("EMAIL_PW", None)
+    isEmailExist = await is_email_exist(payload.email)
 
-    if email:
-        try:
-            yag = yagmail.SMTP({email_addr: email_addr}, email_pw)
+    print(isEmailExist)
 
-            code = utils.get_verify_code()
-            contents = [
-                email_content.format(email, code)
-            ]
-            print(email)
-
-            yag.send(email, 'vrame 인증 코드입니다.', contents)
-            return True
-        except HTTPException as error:
-            print('이메일 발송 실패', error)
-            return False
+    if isEmailExist:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Email already exist')
 
 
-# 1. 이메일 받음
-# 2. 인증 코드 발송
-@router.post('/request_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
-async def request_email_code(payload: auth.RequestVerificationCodeSchema, *, background_tasks: BackgroundTasks):
-    # 유저 이메일이 존재하는지 체크
-    isEmailExist = utils.is_email_exist(payload.email)
-
-    if not isEmailExist:
-        HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Email already exist')
-
-    result = background_tasks.add_task(send_email, email=payload.email)
-    print(result)
+    # 이메일 발송
+    background_tasks.add_task(utils, email=payload.email)
     return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully sent to {}'.format(payload.email)}
 
-
-
+@router.post('/verify_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
+async def verify_email_code(payload: auth.VerifyEmailCodeSchema):
+    """이메일 코드 인증"""
+    
+    # 코드 딕셔너리 안에 이메일이 있고 코드 값이 같으면 인증 성공, 아니면 인증 실패
+    if payload.email in codes and payload.code == codes[payload.email]:
+        return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully verify. data: {}'.format(payload)}
+    else: 
+        raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail='test')
+            
 
 @router.post('/register', status_code=status.HTTP_201_CREATED)
 async def register(payload: users.CreateUserSchema, request: Request, db: Session = Depends(get_db)):
@@ -82,7 +71,7 @@ async def register(payload: users.CreateUserSchema, request: Request, db: Sessio
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST, detail='Passwords do not match')
     #  Hash the password
-    payload.password = utils.hash_password(payload.password)
+    payload.password = hash_password(payload.password)
     del payload.passwordConfirm
     payload.role = 'user'
     payload.verified = False
@@ -128,7 +117,7 @@ def login(payload: auth.LoginUserSchema, response: Response, db: Session = Depen
                             detail='Please verify your email address')
 
     # Check if the password is valid
-    if not utils.verify_password(payload.password, user.password):
+    if not verify_password(payload.password, user.password):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='Incorrect Email or Password')
 

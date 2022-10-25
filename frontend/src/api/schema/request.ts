@@ -22,6 +22,11 @@ export interface LoginRequest {
 
 export interface LogoutRequest {}
 
+export interface RequestEmailRequest {
+  email: string;
+}
+
 export interface VerifyEmailRequest {
   email: string;
+  code: string;
 }

@@ -3,6 +3,8 @@ node_modules
 /dist
 /venv
 __pycache__
+env.py
+alembic.ini
 
 # misc
 .DS_Store

@@ -77,6 +77,12 @@ export const errorMessages: errorMessageType = {
     JA: "Default Error Code",
     ZH: "Default Error Code",
   },
+  304: {
+    KO: "잘못된 값 전송",
+    EN: "잘못된 값 전송",
+    JA: "잘못된 값 전송",
+    ZH: "잘못된 값 전송",
+  },
   400: {
     KO: "Bad Request",
     EN: "Bad Request",

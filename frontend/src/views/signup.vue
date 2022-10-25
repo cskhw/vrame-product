@@ -133,7 +133,7 @@
               </r-textfield>
               <r-btn
                 :btnStyle="{
-                  width: '120px',
+                  width: '140px',
                   border: `1px solid ${colors.borderColor}`,
                   height: '2.25rem',
                 }"
@@ -153,7 +153,7 @@
             <div class="signup-form-field-title">이메일 인증</div>
             <div style="display: flex">
               <r-textfield
-                v-model="signupForm.email_verify_code"
+                v-model="signupForm.code"
                 style="margin-bottom: 10px; margin-right: 1rem"
                 placeholder="인증코드 입력"
                 :textfieldStyle="{
@@ -163,13 +163,14 @@
                 }"
                 :invaildStyle="{ border: '1px solid black' }"
                 :borders="signupInputBorder(0)"
-                :disabled="!signupForm.email.length"
+                :disabled="!isSendEmailCode"
                 rule="num"
+                maxLength="6"
               >
               </r-textfield>
               <r-btn
                 :btnStyle="{
-                  width: '120px',
+                  width: '140px',
                   border: `1px solid ${colors.borderColor}`,
                   height: '2.25rem',
                 }"
@@ -179,7 +180,8 @@
                   backgroundColor: 'gray',
                   color: 'white',
                 }"
-                :disabled="signupForm.email_verify_code.length < 6"
+                :disabled="signupForm.code.length < 6"
+                @click="onClickVerifyBtn"
                 >인증하기
               </r-btn>
             </div>
@@ -354,12 +356,35 @@ import { mdiChevronDown } from "@mdi/js";
 import { computed, reactive, ref, toRef, watch } from "vue";
 import { useRouter } from "vue-router";
 
+// 전역 변수
 const router = useRouter();
 
-function onClickVrameIcon() {
-  router.push("/");
-}
+// 회원가입 폼
+const signupForm = reactive({
+  email: "gusdn0828@gmail.com",
+  code: "",
+  user_id: "",
+  password: "",
+  conform_password: "",
+  name: "",
+  nickname: "",
+  verify: false,
+  agreement: {
+    age14: false,
+    serviceAgreement: false,
+    privacyAgreement: false,
+    eventMailReceive: false,
+  },
+});
+
+// 탭 인덱스
 const curTabIdx = ref(1);
+
+// 인풋 함수들
+const onClickVrameIcon = () => router.push("/");
+const onClickRequestCodeBtn = asyncDebounce(requestCode);
+const onClickVerifyBtn = asyncDebounce(verifyCode);
+const onClickSignupBtn = asyncDebounce(signup);
 
 /**약관 동의 부분 */
 const agreeAll = ref(false);
@@ -386,28 +411,6 @@ const agreeTempContents = `제 1장 총칙
   ④ '회원'이라 함은 '회사' 에 개인정보를 제공하여 회원등록을 한 자로서, '회사' 의 정보를 지속적으로 제공받으며, '회사' 가 제공하는 서비스를 계속적으로 이용할 수 있는 자를 말합니다.
   ⑤ '비회원'이라 함은 회원에 가입하지 않고 '회사' 가 제공하는 서비스를 이용하는 자를 말합니다.`;
 
-const temp = {
-  email: "gusdn0828@gmail.com",
-};
-
-// 회원가입 폼, 변수들
-const signupForm = reactive({
-  email: "",
-  email_verify_code: "",
-  user_id: "",
-  password: "",
-  conform_password: "",
-  name: "",
-  nickname: "",
-  verify: false,
-  agreement: {
-    age14: false,
-    serviceAgreement: false,
-    privacyAgreement: false,
-    eventMailReceive: false,
-  },
-});
-
 // 약관 모두 동의
 function onClickAgreeAllBtn() {
   if (agreeAll.value) {
@@ -433,6 +436,8 @@ watch(signupForm, (newVal) => {
 });
 
 /**유효성 영역 */
+const isSendEmailCode = ref(false);
+
 const guideMsgs = [
   "이메일을 정확하게 입력해주세요.",
   "아이디를 정확하게 입력해주세요.",
@@ -496,6 +501,7 @@ watch(signupForm, () => {
 });
 
 async function requestCode() {
+  // 이메일 인증 및 예외처리
   const response = await api.auth.requestEmailCode({
     email: signupForm.email,
   });
@@ -503,19 +509,28 @@ async function requestCode() {
     return false;
   }
   alert("인증코드를 요청했습니다.");
-  console.log(response);
+  isSendEmailCode.value = true;
 }
 
-const onClickRequestCodeBtn = asyncDebounce(requestCode);
+async function verifyCode() {
+  const response = await api.auth.verifyEmailCode({
+    email: signupForm.email,
+    code: signupForm.code,
+  });
+  if (response?.status !== 200) return;
+
+  alert("인증 성공");
+  isSendEmailCode.value = false;
+}
 
 // 유효성 체크한 후 회원가입 요청
-async function asyncSignup() {
+async function signup() {
   // 한 번 클릭한 후부터 가이드 메세지 보여줌
   isClickedSignupBtn.value = true;
   console.log(isVaildSignupInputs.value);
 
   // 인풋들 유효성 체크
-  if (!checkEmailValidation(temp.email)) return showGuideMsg(0);
+  if (!checkEmailValidation(signupForm.email)) return showGuideMsg(0);
   if (!checkBaseValidation(signupForm.user_id, regStrs.numAndEnAndSp, 4, 20))
     return showGuideMsg(1);
   if (!checkEmailValidation(signupForm.password)) return showGuideMsg(2);
@@ -539,9 +554,6 @@ async function asyncSignup() {
   });
   console.log(response);
 }
-
-// 회원가입 클릭 디바운스
-const onClickSignupBtn = asyncDebounce(asyncSignup);
 </script>
 <style lang="scss" scoped>
 @import "@/styles/views/signup.scss";

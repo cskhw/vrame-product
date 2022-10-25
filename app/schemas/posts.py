@@ -2,7 +2,7 @@ from datetime import datetime
 from typing import List
 import uuid
 from app.schemas import users
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel
 
 
 class FilteredUserResponse(users.UserBaseSchema):

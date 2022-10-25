@@ -4,15 +4,17 @@ from app.common.config import settings
 from app.routers import posts, auth, users
 from app.common.consts import BASE_URL, MODE
 
-BASE_URL = MODE + BASE_URL
+BASE_URL = BASE_URL + MODE
 
 app = FastAPI()
 
 origins = [
     settings.CLIENT_ORIGIN,
+    "http://localhost",
     "http://localhost:80",
     "http://localhost:81",
     "http://localhost:3000",
+    "http://localhost:3001",
 ]
 
 app.add_middleware(
