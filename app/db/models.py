@@ -13,7 +13,6 @@ class User(Base):
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
                 default=uuid.uuid4)
     name = Column(String,  nullable=False)
-    test = Column(String,  nullable=False)
     email = Column(String, unique=True, nullable=False)
     pwshash = Column(String, nullable=False)
     photo = Column(String, nullable=True)
@@ -23,7 +22,7 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True),
                         nullable=False, server_default=text("now()"))
     updated_at = Column(TIMESTAMP(timezone=True),
-                        nullable=False, server_default=text("now()"))
+                        nullable=True)
 
 
 class Post(Base):

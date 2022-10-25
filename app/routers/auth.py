@@ -1,14 +1,11 @@
 from collections import defaultdict
 from datetime import timedelta
 import hashlib
-import os
 from random import randbytes
-from typing import List
 from fastapi import APIRouter, Request, Response, status, Depends, HTTPException, BackgroundTasks
 from pydantic import EmailStr
 
-from app.error import InvaildValueException
-from app.utils.auth import hash_password, is_email_exist, verify_password
+from app.utils.auth import *
 from ..db import models
 
 from app import oauth2
@@ -24,41 +21,51 @@ ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRES_IN
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
 codes = defaultdict(str)
-
+print('auth router')
 
 @router.post('/request_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
 async def request_email_code(payload: auth.RequestEmailCodeSchema, *, background_tasks: BackgroundTasks):
-    """이메일 코드 발송
-    1. 유저 이메일이 존재하는지 체크
-    2. 존재하지 않으면 예외 처리
-    3. 존재하면 인증코드 발송
-    """
+    """이메일 인증 코드 발송"""
 
-    isEmailExist = await is_email_exist(payload.email)
-
-    print(isEmailExist)
-
-    if isEmailExist:
+    # 디비에서 이메일 체크
+    _is_email_exist = await is_email_exist(payload.email)
+    if _is_email_exist:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Email already exist')
 
+    email, code = payload.email, get_verify_code()
+    codes[email] = code
 
     # 이메일 발송
-    background_tasks.add_task(utils, email=payload.email)
+    background_tasks.add_task(send_email, code=code, email=email)
+    print(codes)
     return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully sent to {}'.format(payload.email)}
 
 @router.post('/verify_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
 async def verify_email_code(payload: auth.VerifyEmailCodeSchema):
-    """이메일 코드 인증"""
-    
+    """이메일 코드 인증
+    성공: 200
+    실패: 304
+    """
+
+    print(codes)
+    print(payload)
+    print(payload.email in codes)
+    print(payload.code == codes[payload.email])
+    print(codes[payload.email])
+
     # 코드 딕셔너리 안에 이메일이 있고 코드 값이 같으면 인증 성공, 아니면 인증 실패
     if payload.email in codes and payload.code == codes[payload.email]:
         return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully verify. data: {}'.format(payload)}
     else: 
-        raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail='test')
+        raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail='Verification code is invaild. Please check code.')
             
 
-@router.post('/register', status_code=status.HTTP_201_CREATED)
+@router.post('/register', status_code=status.HTTP_201_CREATED, response_model=users.CreateUserSchema)
 async def register(payload: users.CreateUserSchema, request: Request, db: Session = Depends(get_db)):
+    """회원가입
+    성공: 201
+    실패: 400, 500
+    """
     # Check if user already exist
     user_query = db.query(models.User).filter(
         models.User.email == EmailStr(payload.email.lower()))
@@ -99,7 +106,10 @@ async def register(payload: users.CreateUserSchema, request: Request, db: Sessio
         db.commit()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                             detail='There was an error sending email')
-    return {'status': 'success', 'message': 'Verification token successfully sent to your email'}
+    return JSONResponse(
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content=jsonable_encoder({"detail": exc.detail, "code": exc.status_code}),
+    )
 
 
 @router.post('/login', response_model=base.SimpleResponse)

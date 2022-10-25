@@ -2,6 +2,9 @@ import os
 from pydantic import BaseSettings
 
 class Settings(BaseSettings):
+    BASE_URL: str
+    MODE: str
+
     POSTGRES_USER: str
     POSTGRES_PASSWORD: str
     DATABASE_PORT: int
@@ -25,7 +28,7 @@ class Settings(BaseSettings):
 
     class Config:
         case_sensitive = True
-        env_file = "C:\\Users\\Administrator\\Documents\\GitHub\\vrame-product\\.env"
+        env_file = "C:\\Users\\Administrator\\Documents\\GitHub\\vrame-product\\.env.alembic"
 
 
 settings = Settings()

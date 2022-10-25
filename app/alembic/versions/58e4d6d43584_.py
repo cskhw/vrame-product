@@ -22,6 +22,7 @@ def upgrade():
     create_table(
         "users",
         Column("id", UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4),
+        Column("name", String, unique=False, nullable=False),
         Column("email", String, unique=True, nullable=False),
         Column("pwshash", String, nullable=False),
         Column("photo", String, nullable=True),
@@ -29,7 +30,7 @@ def upgrade():
         Column("is_active",Boolean, nullable=False, server_default='False'),
         Column("role",String, server_default='user', nullable=False),
         Column("created_at",TIMESTAMP(timezone=True), nullable=False, server_default=text("now()")),
-        Column("updated_at",TIMESTAMP(timezone=True), nullable=False, server_default=text("now()"))
+        Column("updated_at",TIMESTAMP(timezone=True), nullable=True)
     )
 
     create_table(
@@ -45,5 +46,5 @@ def upgrade():
     )
 
 def downgrade():
+    drop_table("posts")
     drop_table("users")
-    drop_table("items")

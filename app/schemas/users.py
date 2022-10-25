@@ -6,7 +6,13 @@ class UserBaseSchema(BaseModel):
     name: str
     email: EmailStr
     photo: str
+    pwshash: constr(min_length=8)
+    verification_code: bool = False
+    is_active: bool = False
+    role: str = 'user'
 
+    created_at: datetime
+    updated_at: datetime
     class Config:
         orm_mode = True
 
@@ -16,13 +22,9 @@ class UserResponse(UserBaseSchema):
     updated_at: datetime
 
 class CreateUserSchema(UserBaseSchema):
-    password: constr(min_length=8)
-    passwordConfirm: str
+    pwshash: constr(min_length=8)
     role: str = 'user'
-    verified: bool = False
+    verification_code: bool = False
 
 class UpdateUserSchema(UserBaseSchema):
-    password: constr(min_length=8)
-    passwordConfirm: str
-    role: str = 'user'
-    verified: bool = False
+    id: uuid.UUID

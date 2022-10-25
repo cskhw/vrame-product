@@ -2,9 +2,8 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.common.config import settings
 from app.routers import posts, auth, users
-from app.common.consts import BASE_URL, MODE
 
-BASE_URL = BASE_URL + MODE
+BASE_URL = settings.BASE_URL + settings.MODE
 
 app = FastAPI()
 

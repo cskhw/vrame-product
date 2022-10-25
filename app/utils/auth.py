@@ -4,7 +4,6 @@ import os
 from passlib.context import CryptContext
 from sqlalchemy.orm import Session
 
-from app.db.db import get_db
 from app.crud.users import CRUDUser
 
 import string
@@ -15,10 +14,9 @@ from app.schemas import auth
 
 
 async def is_email_exist(email: str):
-    print('is_email_exist')
     users = CRUDUser()
     get_email = users.get(email=email)
-    print(get_email)
+    print('get_email')
     if get_email:
         return True
     return False
@@ -42,17 +40,17 @@ def get_verify_code(length: int = 6):
 
 
 def send_email(**kwargs):
+    print('send_email')
     email_content = """
     <div style="width: 400px; height: 300px; padding: 16px; background-color: white; border: 1px solid #b3b3b3">
         <div style=><strong>{}</strong>님, 안녕하세요. <br/><strong>vrame</strong>을 이용해주셔서 감사합니다!</div>
         <div>인증코드는 <strong style="color: #2964e0">{}</strong>입니다. 정확하게 입력해주세요.</div><br/>
         <div style="font-size: 12px; color: gray">Copyright © vrame Co., Ltd. All Rights Reserved.</div>
-    </div>
-    
+    </div>    
     """
 
-    codes: defaultdict[str] = kwargs.get('codes', None)
-    email: auth.EmailRecipients = kwargs.get('email', None)
+    email: str = kwargs.get('email', None)
+    code: str = kwargs.get('code', None)
     email_addr = os.environ.get("EMAIL_ADDR", None)
     email_pw = os.environ.get("EMAIL_PW", None)
 
@@ -60,14 +58,14 @@ def send_email(**kwargs):
         try:
             yag = yagmail.SMTP({email_addr: email_addr}, email_pw)
             
-            code = get_verify_code()
+            
             contents = [
                 email_content.format(email, code)
             ]
 
-            codes[email] = code
 
             yag.send(email, 'vrame 인증 코드입니다.', contents)
+            print(code)
             return True
         except HTTPException as error:
             print('이메일 발송 실패', error)
