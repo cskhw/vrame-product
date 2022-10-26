@@ -1,8 +1,9 @@
 from collections import defaultdict
 from datetime import timedelta
 import hashlib
-from random import randbytes
 from fastapi import APIRouter, Request, Response, status, Depends, HTTPException, BackgroundTasks
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pydantic import EmailStr
 
 from app.utils.auth import *
@@ -26,19 +27,19 @@ print('auth router')
 @router.post('/request_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
 async def request_email_code(payload: auth.RequestEmailCodeSchema, *, background_tasks: BackgroundTasks):
     """이메일 인증 코드 발송"""
+    email = payload.email.lower()
 
     # 디비에서 이메일 체크
-    _is_email_exist = await is_email_exist(payload.email)
-    if _is_email_exist:
+    if await is_email_exist(email):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Email already exist')
 
-    email, code = payload.email, get_verify_code()
+    code = get_verify_code()
     codes[email] = code
 
     # 이메일 발송
     background_tasks.add_task(send_email, code=code, email=email)
     print(codes)
-    return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully sent to {}'.format(payload.email)}
+    return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully sent to {}'.format(email)}
 
 @router.post('/verify_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
 async def verify_email_code(payload: auth.VerifyEmailCodeSchema):
@@ -64,53 +65,46 @@ async def verify_email_code(payload: auth.VerifyEmailCodeSchema):
 async def register(payload: users.CreateUserSchema, request: Request, db: Session = Depends(get_db)):
     """회원가입
     성공: 201
-    실패: 400, 500
+    실패: 400, 409, 500
     """
     # Check if user already exist
     user_query = db.query(models.User).filter(
         models.User.email == EmailStr(payload.email.lower()))
     user = user_query.first()
+
+    # Compare password and confirm_password
+    if payload.password != payload.confirm_password:
+        return JSONResponse(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            content=jsonable_encoder({"detail": "", "body": payload}),
+        )
+
+    # Chcek user exist
     if user:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Account already exist')
-    # Compare password and passwordConfirmd
-    if payload.password != payload.passwordConfirm:
-        raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST, detail='Passwords do not match')
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=jsonable_encoder({"detail": "", "body": payload}),
+        )
+
     #  Hash the password
-    payload.password = hash_password(payload.password)
-    del payload.passwordConfirm
+    payload.password = hash_password(payload.password)3
+
+    # db에 넣을 json 만듬
+    del payload.confirm_password
     payload.role = 'user'
-    payload.verified = False
     payload.email = EmailStr(payload.email.lower())
+    print(payload)
     new_user = models.User(**payload.dict())
+
+    # db에 저장
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
 
-    try:
-        # Send Verification Email
-        token = randbytes(10)
-        hashedCode = hashlib.sha256()
-        hashedCode.update(token)
-        verification_code = hashedCode.hexdigest()
-        user_query.update(
-            {'verification_code': verification_code}, synchronize_session=False)
-        db.commit()
-        url = f"{request.url.scheme}://{request.client.host}:{request.url.port}/api/auth/verifyemail/{token.hex()}"
-        # await Email(new_user, url, [payload.email]).sendVerificationCode()
-    except Exception as error:
-        print('Error', error)
-        user_query.update(
-            {'verification_code': None}, synchronize_session=False)
-        db.commit()
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                            detail='There was an error sending email')
     return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST,
-        content=jsonable_encoder({"detail": exc.detail, "code": exc.status_code}),
+        status_code=status.HTTP_201_CREATED,
+        content=jsonable_encoder({"detail": "Success create user.", "body": payload}),
     )
-
 
 @router.post('/login', response_model=base.SimpleResponse)
 def login(payload: auth.LoginUserSchema, response: Response, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):

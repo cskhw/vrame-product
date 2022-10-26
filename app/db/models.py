@@ -12,9 +12,10 @@ class User(Base):
 
     id = Column(UUID(as_uuid=True), primary_key=True, nullable=False,
                 default=uuid.uuid4)
+    user_id = Column(String,  nullable=False)
     name = Column(String,  nullable=False)
     email = Column(String, unique=True, nullable=False)
-    pwshash = Column(String, nullable=False)
+    password = Column(String, nullable=False)
     photo = Column(String, nullable=True)
     verification_code = Column(String, nullable=True)
     is_active = Column(Boolean, nullable=False, server_default='False')

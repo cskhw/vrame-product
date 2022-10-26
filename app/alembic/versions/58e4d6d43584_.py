@@ -24,7 +24,7 @@ def upgrade():
         Column("id", UUID(as_uuid=True), primary_key=True, nullable=False, default=uuid.uuid4),
         Column("name", String, unique=False, nullable=False),
         Column("email", String, unique=True, nullable=False),
-        Column("pwshash", String, nullable=False),
+        Column("password", String, nullable=False),
         Column("photo", String, nullable=True),
         Column("verification_code", String, nullable=True),
         Column("is_active",Boolean, nullable=False, server_default='False'),
