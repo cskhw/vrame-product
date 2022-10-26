@@ -22,7 +22,6 @@ ACCESS_TOKEN_EXPIRES_IN = settings.ACCESS_TOKEN_EXPIRES_IN
 REFRESH_TOKEN_EXPIRES_IN = settings.REFRESH_TOKEN_EXPIRES_IN
 
 codes = defaultdict(str)
-print('auth router')
 
 @router.post('/request_email_code', status_code=status.HTTP_200_OK, response_model=base.SimpleResponse)
 async def request_email_code(payload: auth.RequestEmailCodeSchema, *, background_tasks: BackgroundTasks):
@@ -31,13 +30,12 @@ async def request_email_code(payload: auth.RequestEmailCodeSchema, *, background
 
     # 디비에서 이메일 체크
     if await is_email_exist(email):
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail='Email already exist')
+        return {'status': status.HTTP_409_CONFLICT, 'detail': 'Email already exist {}'.format(email)}
 
-    code = get_verify_code()
-    codes[email] = code
+    codes[email] = get_verify_code()
 
     # 이메일 발송
-    background_tasks.add_task(send_email, code=code, email=email)
+    background_tasks.add_task(send_email, code=codes[email], email=email)
     print(codes)
     return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully sent to {}'.format(email)}
 
@@ -58,7 +56,7 @@ async def verify_email_code(payload: auth.VerifyEmailCodeSchema):
     if payload.email in codes and payload.code == codes[payload.email]:
         return {'status': status.HTTP_200_OK, 'detail': 'Verification token successfully verify. data: {}'.format(payload)}
     else: 
-        raise HTTPException(status_code=status.HTTP_304_NOT_MODIFIED, detail='Verification code is invaild. Please check code.')
+        return {'status': status.HTTP_304_NOT_MODIFIED, 'detail': 'Verification code is invaild. Please check code.'}
             
 
 @router.post('/register', status_code=status.HTTP_201_CREATED, response_model=users.CreateUserSchema)
@@ -87,7 +85,7 @@ async def register(payload: users.CreateUserSchema, request: Request, db: Sessio
         )
 
     #  Hash the password
-    payload.password = hash_password(payload.password)3
+    payload.password = hash_password(payload.password)
 
     # db에 넣을 json 만듬
     del payload.confirm_password
