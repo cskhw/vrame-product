@@ -30,7 +30,10 @@ async def request_email_code(payload: auth.RequestEmailCodeSchema, *, background
 
     # 디비에서 이메일 체크
     if await is_email_exist(email):
-        return {'status': status.HTTP_409_CONFLICT, 'detail': 'Email already exist {}'.format(email)}
+        return JSONResponse(
+            status_code=status.HTTP_409_CONFLICT,
+            content=jsonable_encoder({'detail': f"Email already exist {email}", "body": payload}),
+        )
 
     codes[email] = get_verify_code()
 

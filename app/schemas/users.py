@@ -8,6 +8,7 @@ class UserBaseSchema(BaseModel):
     email: EmailStr
     photo: Optional[str]
     password: constr(min_length=8, max_length=20)
+    user_id: constr(min_length=4, max_length=20)
     role: str = 'user'
     is_active: bool = False
 
