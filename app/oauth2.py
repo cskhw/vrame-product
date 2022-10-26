@@ -45,11 +45,8 @@ def require_user(db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
         if not user:
             raise UserNotFound('User no longer exist')
 
-        if not user.verified:
-            raise NotVerified('You are not verified')
-
-    except Exception as e:
-        error = e.__class__.__name__
+    except Exception as exc:
+        error = exc.__class__.__name__
         print(error)
         if error == 'MissingTokenError':
             raise HTTPException(

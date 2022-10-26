@@ -1,6 +1,7 @@
 from collections import defaultdict
 from datetime import timedelta
 import hashlib
+from typing import Type
 from fastapi import APIRouter, Request, Response, status, Depends, HTTPException, BackgroundTasks
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -107,26 +108,24 @@ async def register(payload: users.CreateUserSchema, request: Request, db: Sessio
         content=jsonable_encoder({"detail": "Success create user.", "body": payload}),
     )
 
-@router.post('/login', response_model=base.SimpleResponse)
+@router.post('/login', response_model=auth.LoginUserSchema)
 def login(payload: auth.LoginUserSchema, response: Response, db: Session = Depends(get_db), Authorize: AuthJWT = Depends()):
     # Check if the user exist
-    user = db.query(models.User).filter(
+    user: Type[models.User] = db.query(models.User).filter(
         models.User.email == EmailStr(payload.email.lower())).first()
     if not user:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail='Incorrect Email or Password')
-
-    # Check if user verified his email
-    if not user.verified:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail='Please verify your email address')
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
+                            content=jsonable_encoder({"detail": "Incorrect Email or Password.", "body": payload}),)
 
     # Check if the password is valid
     if not verify_password(payload.password, user.password):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail='Incorrect Email or Password')
+        return JSONResponse(status_code=status.HTTP_400_BAD_REQUEST,
+                            content=jsonable_encoder({"detail": "Incorrect Email or Password.", "body": payload}),)
 
     # Create access token
+    print(user.__dict__)
+    print(str(user.id))
+
     access_token = Authorize.create_access_token(
         subject=str(user.id), expires_time=timedelta(minutes=ACCESS_TOKEN_EXPIRES_IN))
 
@@ -134,20 +133,27 @@ def login(payload: auth.LoginUserSchema, response: Response, db: Session = Depen
     refresh_token = Authorize.create_refresh_token(
         subject=str(user.id), expires_time=timedelta(minutes=REFRESH_TOKEN_EXPIRES_IN))
 
+    access_token_expire_time = ACCESS_TOKEN_EXPIRES_IN * 60,
+    refresh_token_expire_time = REFRESH_TOKEN_EXPIRES_IN * 60
+
     # Store refresh and access tokens in cookie
-    response.set_cookie('access_token', access_token, ACCESS_TOKEN_EXPIRES_IN * 60,
-                        ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
+    response.set_cookie('access_token', access_token, access_token_expire_time,
+                        access_token_expire_time, '/', None, False, True, 'lax')
     response.set_cookie('refresh_token', refresh_token,
-                        REFRESH_TOKEN_EXPIRES_IN * 60, REFRESH_TOKEN_EXPIRES_IN * 60, '/', None, False, True, 'lax')
-    response.set_cookie('logged_in', 'True', ACCESS_TOKEN_EXPIRES_IN * 60,
+                        refresh_token_expire_time, refresh_token_expire_time, '/', None, False, True, 'lax')
+    response.set_cookie('logged_in', 'True', refresh_token_expire_time,
                         ACCESS_TOKEN_EXPIRES_IN * 60, '/', None, False, False, 'lax')
 
     # Send both access
-    return {'status': 'success', 'access_token': access_token}
+    return {'status': 'success', 'body': {
+        user: user,
+        access_token: access_token,
+        refresh_token: refresh_token
+    }}
 
 
 @router.get('/refresh')
-def refresh_token(response: Response, request: Request, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
+def refresh(response: Response, request: Request, Authorize: AuthJWT = Depends(), db: Session = Depends(get_db)):
     try:
         Authorize.jwt_refresh_token_required()
 
